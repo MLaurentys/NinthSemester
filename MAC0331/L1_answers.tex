@@ -1,0 +1,46 @@
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{mathtools}
+
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\lstset{columns=fullflexible,
+	mathescape=true,
+	numbers=left,
+	stepnumber=1,
+	literate=
+	{=}{$\leftarrow{}$}{1},
+	morekeywords={se,entao,para,devolva,continua},
+	xleftmargin=5.0ex
+}
+
+\title{\vspace{-4.0cm}MAC0331 - Lista 1}
+\author{Matheus T. de Laurentys, 9793714}
+
+\begin{document}
+	\maketitle
+	\noindent
+	\textbf{Q 2:} O problema com a ideia é que manter os pontos da linha separadora todos no mesmo conjunto (esquerda ou direita) pode estragar a divisão dos pontos. Por exemplo, se fossemos dividir a instância [(0,0), (1, 0), (1, 2), (1,3),(1,4)] normalmente, obteriamos E=[(0,0), (1, 0), (1, 2)] e D=[(1,3),(1,4)] e, com a proposta do professor, obeteriamos E=[(0,0), (1, 0), (1, 2), (1,3),(1,4)] e D=[].\\
+	\textbf{Q 4:} 
+	\begin{lstlisting}
+	Combine (X, Y, a, p, r, $d_E$, $d_D$)
+	d = min{$d_E, d_D$}
+	q = $\floor{(p+r)/2}$
+	(f, t) = Candidatos (X, a, p, r, d)
+	// so vai comparar pontos da esquerda com pontos da direita
+	para i = 1 ate t - 1 faca
+		se f[i] > q:
+			entao continua
+		para j = i + 1 ate min{i + 7, t} faca
+			se f[j] $\le$ q:
+				entao continua
+			d' = Dist(X[f[i]], Y[f[i]], X[f[j]], Y[f[j]])
+				se d' < d
+					entao d = d'
+	devolva d$$
+	\end{lstlisting}
+	O algoritmo acima continua linear. A prova e a mesma da feita sem as condicionais das linha 7 e 10, vista em aula.
+\end{document}
