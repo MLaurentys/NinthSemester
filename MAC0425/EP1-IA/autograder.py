@@ -131,7 +131,7 @@ def run_tests():
     totalTestsGlobal = 10
     unigramCost, bigramCost, possibleFills  =  getRealCosts()
     totalGlobal += part1Test(unigramCost)
-    #totalGlobal += part2Test(bigramCost,possibleFills)
+    totalGlobal += part2Test(bigramCost,possibleFills)
     print('#############################################################')
     print('# Your final score in this simple tests are:                #')
     print('#############################################################')

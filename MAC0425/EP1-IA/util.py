@@ -72,7 +72,7 @@ def informed_search(problem, f):
         for action in problem.actions(node.state):
             state = problem.nextState(node.state, action)
             cost = problem.stepCost(node.state, action) + node.cost
-            print(f'state = {state} cost = {cost}')
+            #print(f'state = {state} cost = {cost}')
             if state not in reached or  cost < reached[state] :
                 reached[state] = cost
                 frontier.add(Node(state, cost, node, action))

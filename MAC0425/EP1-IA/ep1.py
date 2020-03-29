@@ -29,6 +29,10 @@
 
 import util
 
+def get_words(s):
+    if (s == ''): return []
+    return s.split(' ')
+
 ############################################################
 # Part 1: Segmentation problem under a unigram model
 
@@ -55,8 +59,10 @@ class SegmentationProblem(util.Problem):
         """
         l = len(state)
         if (l == 0): return [self.query[0]]
+        ret = []
         blank = state.count(' ')
-        ret = [self.query[l - blank]]
+        if (l - blank < len(self.query)):
+            ret += [self.query[l - blank]]
         if (state[-1] != ' '): ret += ' '
         return ret
 
@@ -66,14 +72,26 @@ class SegmentationProblem(util.Problem):
 
     def isGoalState(self, state):
         """ Metodo que implementa teste de meta """
-        return len(self.query) == len(state) - state.count(' ')
+        ret = False
+        if (len(self.query) == len(state) - state.count(' ')):
+            ret = True
+            wds = get_words(state)
+            for word in wds:
+                if (self.unigramCost(word) > 10.0):
+                    ret = False
+                    break
+        return ret
 
     def stepCost(self, state, action):
         """ Metodo que implementa funcao custo """
-        if(action == ' '): return 0.0
+
         j = len(state)
         while (j > 0 and state[j-1] != ' '): j -= 1
         word = state[j:]
+        if(action == ' '):
+            cst = self.unigramCost(word)
+            if (cst < 10.0):
+                return -self.unigramCost(word)
         cost1 = self.unigramCost(word)
         if(word == ''): cost1 = 0.0
         cost = self.unigramCost(word + action) - cost1
@@ -82,30 +100,13 @@ class SegmentationProblem(util.Problem):
 
 
 def segmentWords(query, unigramCost):
-
     if len(query) == 0:
         return ''
-    
     sp = SegmentationProblem(query, unigramCost)
-
-    # BEGIN_YOUR_CODE 
-    # Voce pode usar a função getSolution para recuperar a sua solução a partir do no meta
-    # valid,solution  = util.getSolution(goalNode,problem)
     return util.uniformCostSearch(sp).state
-
-    # END_YOUR_CODE
 
 ############################################################
 # Part 2: Vowel insertion problem under a bigram cost
-
-def get_words(s):
-    j = 0
-    wds = []
-    for i in range(len(s)):
-        if(s[i] == ' '):
-            wds.append(s[j:i])
-            j = i
-    return wds
 
 class VowelInsertionProblem(util.Problem):
     def __init__(self, queryWords, bigramCost, possibleFills):
@@ -113,8 +114,11 @@ class VowelInsertionProblem(util.Problem):
         self.bigramCost = bigramCost
         self.possibleFills = possibleFills
         self.fills = []
-        for i in range (len(queryWords)):
-            self.fills.append(possibleFills(queryWords[i]))
+        if (len(queryWords) == 1):
+            self.fills = queryWords
+        else:
+            for i in range (len(queryWords)):
+                self.fills.append(possibleFills(queryWords[i]))
 
     def isState(self, state):
         """ Metodo  que implementa verificacao de estado """
@@ -153,8 +157,8 @@ class VowelInsertionProblem(util.Problem):
             if(state[i] == ' '): j += 1
             i += 1
         j = i
-        while (state[i] != ' '): i+=1
-        return " ".join(state[0:j+1]) + action[0] + " ".join(state[i:len(state)])
+        while (i < len(state) and state[i] != ' '): i+=1
+        return state[0:j] + action[0] + state[i:len(state)]
 
     def isGoalState(self, state):
         """ Metodo que implementa teste de meta """
@@ -167,32 +171,29 @@ class VowelInsertionProblem(util.Problem):
     def stepCost(self, state, action):
         """ Metodo que implementa funcao custo """
         wds = get_words(state)
+        if (len(wds) == 1): return 0.0
         i = action[1]
         if (i == 0):
-            b1 = self.bigramCost(wds[i-1], wds[i])
-            n_b1 = self.bigramCost(wds[i-1], action[0])
+            b1 = self.bigramCost(wds[i], wds[i + 1])
+            n_b1 = self.bigramCost(action[0], wds[i+1])
             return n_b1 - b1
-        if (i==len(wds-1)):
-            b2 = self.bigramCost(wds[i], wds[i+1])
-            n_b2 = self.bigramCost(action[0], wsd[i+1])
+        if (i == len(wds) - 1):
+            b2 = self.bigramCost(wds[i-1], wds[i])
+            n_b2 = self.bigramCost(wds[i-1], action[0])
             return n_b2 - b2
 
         b1 = self.bigramCost(wds[i-1], wds[i])
         b2 = self.bigramCost(wds[i], wds[i+1])
         n_b1 = self.bigramCost(wds[i-1], action[0])
-        n_b2 = self.bigramCost(action[0], wsd[i+1])
+        n_b2 = self.bigramCost(action[0],wds[i+1])
         return (n_b1+n_b1) - (b1+b2)
 
 
 
 def insertVowels(queryWords, bigramCost, possibleFills):
-    # BEGIN_YOUR_CODE 
-    # Voce pode usar a função getSolution para recuperar a sua solução a partir do no meta
-    # valid,solution  = util.getSolution(goalNode,problem)
     vp = VowelInsertionProblem(queryWords, bigramCost, possibleFills)
     ret = util.uniformCostSearch(vp)
     return ret.state
-    # END_YOUR_CODE
 
 ############################################################
 
@@ -221,15 +222,16 @@ def main():
     """
     unigramCost, bigramCost, possibleFills  =  getRealCosts()
     
-    #resulSegment = segmentWords('believeinyourselfhavefaithinyourabilities', unigramCost)
     #resulSegment = segmentWords('assimpleasthat', unigramCost)
-    #print(f'twowords = {unigramCost("twowords")}')
-    #print(f'two words = {unigramCost("two")} + {unigramCost("words")}')
-    #print(f'two wor = {unigramCost("two")} + {unigramCost("wor")}')
     #print(resulSegment)
+    #print(f'assimpleasthat = {unigramCost("assimpleasthat")}')
+    #print(f'as simple as that = {unigramCost("as")}, {unigramCost("simple")}, {unigramCost("as")}, {unigramCost("tha")}')
     
 
-    resultInsert = insertVowels('smtms ltr bcms nvr'.split(), bigramCost, possibleFills)
+    resultInsert = insertVowels('zz$z$zz'.split(), bigramCost, possibleFills)
+    print(f'maria latters = {bigramCost("maria", "latters")}')
+    print(f'maria latters = {bigramCost("more", "letters")}')
+    
     print(resultInsert)
 
 if __name__ == '__main__':
