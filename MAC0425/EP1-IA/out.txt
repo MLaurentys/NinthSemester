@@ -1,0 +1,4 @@
+Training language cost functions [corpus: corpus.txt]... 
+Done!
+m pa = 12.61156608657029
+me up = 11.004368931537158

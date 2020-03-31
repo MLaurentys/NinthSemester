@@ -77,7 +77,7 @@ class SegmentationProblem(util.Problem):
             ret = True
             wds = get_words(state)
             for word in wds:
-                if (self.unigramCost(word) > 10.0):
+                if (self.unigramCost(word) > 13.3):
                     ret = False
                     break
         return ret
@@ -102,8 +102,13 @@ class SegmentationProblem(util.Problem):
 def segmentWords(query, unigramCost):
     if len(query) == 0:
         return ''
+    query = query.lower()
     sp = SegmentationProblem(query, unigramCost)
-    return util.uniformCostSearch(sp).state
+    ret = util.uniformCostSearch(sp)
+    if(ret):
+        return ret.state
+    else:
+        return ''
 
 ############################################################
 # Part 2: Vowel insertion problem under a bigram cost
@@ -163,6 +168,9 @@ class VowelInsertionProblem(util.Problem):
     def isGoalState(self, state):
         """ Metodo que implementa teste de meta """
         wds = get_words(state)
+        # for i in range(len(wds) - 1):
+        #     if (self.bigramCost(wds[i], wds[i+1]) > 12.62):
+        #         return False
         for i in range(len(wds)):
             if (wds[i] not in self.fills[i]):
                 return False
@@ -186,14 +194,19 @@ class VowelInsertionProblem(util.Problem):
         b2 = self.bigramCost(wds[i], wds[i+1])
         n_b1 = self.bigramCost(wds[i-1], action[0])
         n_b2 = self.bigramCost(action[0],wds[i+1])
-        return (n_b1+n_b1) - (b1+b2)
+        return (n_b1+n_b1) - (b1 + b2)
 
 
 
 def insertVowels(queryWords, bigramCost, possibleFills):
+    for i in range (len(queryWords)):
+        queryWords[i] = queryWords[i].lower()
     vp = VowelInsertionProblem(queryWords, bigramCost, possibleFills)
     ret = util.uniformCostSearch(vp)
-    return ret.state
+    if(ret):
+        return ret.state
+    else:
+        return ''
 
 ############################################################
 
@@ -222,15 +235,22 @@ def main():
     """
     unigramCost, bigramCost, possibleFills  =  getRealCosts()
     
-    #resulSegment = segmentWords('assimpleasthat', unigramCost)
-    #print(resulSegment)
+    resulSegment = segmentWords('thisisnotmybeautifulhouse', unigramCost)
+    print(resulSegment)
     #print(f'assimpleasthat = {unigramCost("assimpleasthat")}')
     #print(f'as simple as that = {unigramCost("as")}, {unigramCost("simple")}, {unigramCost("as")}, {unigramCost("tha")}')
     
 
-    resultInsert = insertVowels('zz$z$zz'.split(), bigramCost, possibleFills)
-    print(f'maria latters = {bigramCost("maria", "latters")}')
-    print(f'maria latters = {bigramCost("more", "letters")}')
+    resultInsert = insertVowels('ngh lrdy'.split(), bigramCost, possibleFills)
+    # print(f'm pa = {bigramCost("m", "pa")}')
+    # print(f'me up = {bigramCost("me", "up")}')
+    # print(f'enough already = {bigramCost("enough", "already")}')
+    # print(f'ngh lrdy = {bigramCost("ngh", "lrdy")}')
+    # print(f'would like = {bigramCost("would", "like")}')
+    # print(f'like to = {bigramCost("like", "to")}')
+    # print(f'to have = {bigramCost("to", "have")}')
+    # print(f'have more = {bigramCost("have", "more")}')
+    # print(f'more letters = {bigramCost("more", "letters")}')
     
     print(resultInsert)
 

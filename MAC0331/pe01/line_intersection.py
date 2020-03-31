@@ -7,3 +7,4 @@ from geocomp.common.guiprim import *
 import math
 
 def Scanline (segments):
+    print(segments)

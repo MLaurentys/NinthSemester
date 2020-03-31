@@ -18,6 +18,8 @@ def part1Test(unigramCost):
 		for element in expected:
 			if segmentWords(element[0],unigramCost)== element[1]:
 				testResults +=1
+			else:
+				print(segmentWords(element[0],unigramCost), element[1])
 	except IOError as e:
 		print('Error!')
 		print('Problems in segmentWords')
