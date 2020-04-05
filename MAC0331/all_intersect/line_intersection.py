@@ -131,23 +131,36 @@ class ABB:
     def is_empty(self):
         return self._root == None
 
+##############################
+###
+### PE 1 - START
+###
+##############################
 
+##
+## Auxiliary functions for sorting
+##
 
-# PE 1 - START
-
+# order of segments is based on starting point only
 def compare_segments(s1, s2):
     return compare_points(s1.init, s2.init)
+# left before right, then bottom before top
 def compare_points(pt1, pt2):
     if(pt1.x == pt2.x):
         return pt1.y - pt2.y
     return pt1.x - pt2.x
 
-# init = esquerdo, to = direito
+##
+## Auxiliary function that does pre-processing
+##
+
+# Makes segment.start <= segment.end
 def fix_segments (l):
     for i in range (len(l)):
         res = compare_points(l[i].init, l[i].to)
         if (res > 0):
             l[i].init, l[i].to = l[i].to, l[i].init
+# Makes initial map and queue of the segments limits
 def make_event_points (segs):
     heap = queue.PriorityQueue()
     hmap = {}
@@ -169,6 +182,52 @@ def make_event_points (segs):
             heap.put(nd_t)
             hmap[segs[ind].to] = nd_t
     return heap, hmap
+
+##
+## Functions reponsible for calculating intersections
+##
+
+
+def area2 (p1, p2, p3):
+    return p1.x*p2.y - p1.y*p2.x + p1.y*p3.x \
+            -p1.x*p3.y + p2.x*p3.y - p3.x*p2.y
+def at_left(pt, p1, p2):
+    return area2 (pt,p1,p2) > 0
+def is_colinear (p1,p2,p3):
+    return area2(p1,p2,p3) == 0
+# Whether pt is in between p1 and p2 (presumes p1 <= p2)
+def in_between(pt, p1, p2):
+    ret = False
+    if is_colinear(pt,p1,p2):
+        if p1.x != p2.x:
+            ret = p1.x <= pt.x <= p2.x
+        else:
+            ret = p1.y <= pt.y <= p2.y
+    return ret
+
+# Whether segmets cross in one midpoint
+def seg_intersects_properly (seg1, seg2):
+    a,b,c,d = seg1.init, seg1.to, seg2.init, seg2.to
+    if is_colinear(a,c,d) or \
+        is_colinear(b,c,d) or \
+        is_colinear(c,a,b) or \
+        is_colinear(d,a,b):
+        return False
+    return (at_left(a,c,d) != at_left(b,c,d)) and \
+            (at_left(c,a,b) != at_left(d,a,b))
+
+# Whether segments cross
+def seg_intersects(seg1, seg2):
+    a,b,c,d = seg1.init, seg1.to, seg2.init, seg2.to
+    if (seg_intersects_properly):
+        return True
+    return in_between(a,c,d) or in_between(b,c,d) or \
+            in_between(c,a,b) or in_between(d,a,b)
+
+
+##
+## Scanline
+##
 
 # Scanline algorithm to find all intersections between segments in a plane
 def Scanline (segments):
