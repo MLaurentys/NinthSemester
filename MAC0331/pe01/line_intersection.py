@@ -6,6 +6,7 @@ from geocomp.common import prim
 from geocomp.common import segment
 from geocomp.common import control
 from geocomp import config
+from geocomp import colors
 
 # Data Structure I Implemented
 
@@ -184,20 +185,33 @@ def Scanline (segments):
     
     while (not heap.empty()):
         pt = heap.get()
-        print(pt.node.x, pt.node.y)
-        for seg in pt.segments:
-            print("Ponto extremo dos segmentos:")
-            print(segments[seg[0]])
-        for inter in pt.intersections:
-            print("Ponto de interseccao entre os segmentos:")
-            print(inter[0], inter[1])
+        print_aux1(pt, segments)
         # Start of a new segment
         for seg in pt.left:
-            pass
+            circ = control.plot_circle(pt.node.x, pt.node.y, "green", 2)
+            segments[seg].highlight
+            control.sleep()
+
+            control.plot_delete(circ)
         #End of an exhisting segment
         for seg in pt.right:
-            pass
+            circ = control.plot_circle(pt.node.x, pt.node.y, "yellow", 2)
+            control.sleep()
+
+            control.plot_delete(circ)
         #Intersections on the point (no specific order)
         for segs in pt.intersections:
-            pass
+            circ = control.plot_circle(pt.node.x, pt.node.y, "red", 2)
+            control.sleep()
 
+            control.plot_delete(circ)
+
+# auxiliary prints
+def print_aux1(pt, segs):
+    print(pt.node.x, pt.node.y)
+    print("Ponto extremo dos segmentos:")
+    for seg in pt.segments:
+        print(segs[seg[0]])
+    print("Ponto de interseccao entre os segmentos:")
+    for inter in pt.intersections:
+        print(inter[0], inter[1])
