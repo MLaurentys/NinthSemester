@@ -21,14 +21,32 @@ class Node:
         else:
             return self.x < other.x
 
+class Node_Seg:
+    def __init__(self, seg):
+        super().__init__()
+        self.left = None
+        self.right = None
+        self.start = Node(seg.init)
+        self.end = Node(seg.to)
+
+    def get_val(self):
+        return self.start, self.end
+
+    def set_val(self, start, end):
+        self.start = start
+        self.end = end
+
+    def __lt__(self, other):
+        return self.start < other.start
 
 class ABB:
-    def __init__(self):
+    def __init__(self, Nd_constr):
         super().__init__()
         self._root = None
-    
-    def insert(self, point):
-        nd = Node(point.init, point.to)
+        self._Node = Nd_constr
+
+    def insert(self, val):
+        nd = self._Node(val)
         if (self._root == None):
             self._root = nd
             return
@@ -45,35 +63,45 @@ class ABB:
         else:
             par.right = nd
 
-    def remove(self, point):
-        nd = Node(point.init, point.to)
-        if (self._root == None):
-            return False, None
-        node = self._root
-        par = None
-        while (node):
-            par = node
-            if (nd < node):
-                node = node.left
-            elif (node < nd):
-                node = node.right
-            else:
-                
-                return True
-        if (nd < par):
-            par.left = nd
+    def _remove(self, cur_node, node):
+        if (cur_node is None):
+            return None
+        if (node < cur_node):
+            cur_node.left = _remove(cur_node.left, node)
+        elif (cur_node < node):
+            cur_node.right = _remove(cur_node.right, node)
         else:
-            par.right = nd
-
-    def remove_min(self, node):
-        par = None
-        while (node):
-            par = node
-            if (node.left):
-                node = node.left
+            if (cur_node.left is None):
+                ret = cur_node.right
+                cur_node = None
+            elif (cur_node.right is None):
+                ret = cur_node.left
+                cur_node = None
             else:
-                pass
+                n_node = get_min(cur_node.right)
+                cur_node.set_val(n_node.get_val())
+                _remove(cur_node.right, n_node)
+                ret = cur_node
+            cur_node = ret
+        return cur_node
 
+
+    def remove(self, val):
+        nd = self._Node(val)
+        return _remove(self._root, Node)
+
+    def get_min(self, node):
+        par = None
+        nd = node
+        while (nd):
+            par = nd
+            nd = nd.left
+        return par
+
+
+
+
+# PE 1 - START
 def compare_segments(s1, s2):
     return compare_points(s1.init, s2.init)
 def compare_points(pt1, pt2):
