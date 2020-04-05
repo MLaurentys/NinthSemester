@@ -17,6 +17,7 @@ class Node_Seg:
         super().__init__()
         self.left = None
         self.right = None
+        self.seg = seg
         self.start = Node(seg[0])
         self.end = Node(seg[1])
 
@@ -28,7 +29,13 @@ class Node_Seg:
         self.end = end
 
     def __lt__(self, other):
-        return self.start < other.start
+        if self.start < other.start:
+            return True
+        else:
+            if (other.start < self.start):
+                return False
+            else:
+                return self.end < other.end
 
 class ABB:
     def __init__(self, Nd_constr):
@@ -93,16 +100,54 @@ class ABB:
     def is_empty(self):
         return self._root == None
 
+    
+
+    def _get_neighbour(self, node):
+        def find_left(start, node):
+                ret = None
+                if(start != None):
+                    if (start < node):
+                        temp = find_left(start.right, node)
+                        ret = temp if (temp) else start
+                    else:
+                        ret = find_left(start.left, node)
+                return ret
+        def find_right(start, node):
+            ret = None
+            if(start != None):
+                if (node < start):
+                    temp = find_right(start.left, node)
+                    ret = temp if(temp) else start
+                else:
+                    ret = find_right(start.right, node)
+            return ret
+        return find_left(self._root, node), find_right(self._root, node)
+
+    def get_neighbours(self, val):
+        nd = self._Node(val)
+        ns = self._get_neighbour(nd)
+        ns1 = ns[0].seg if(ns[0]) else None
+        ns2 = ns[1].seg if(ns[1]) else None
+        return ns1, ns2
 
 bst = ABB(Node_Seg)
 a = [[ ( 57.0, 17.0 ), ( 96.0, 5.0 ) ], [ ( 49.0, 40.0 ), ( 60.0, 61.0 ) ], [ ( 2.0, 36.0 ), ( 36.0, 90.0 ) ], [ ( 2.0, 36.0 ), ( 17.0, 28.0 ) ], [ ( 50.0, 32.0 ), ( 79.0, 71.0 ) ], [ ( 51.0, 87.0 ), ( 92.0, 46.0 ) ], [ ( 22.0, 11.0 ), ( 34.0, 41.0 ) ], [ ( 47.0, 44.0 ), ( 65.0, 57.0 ) ], [ ( 15.0, 25.0 ), ( 41.0, 4.0 ) ], [ ( 83.0, 15.0 ), ( 93.0, 15.0 ) ], [ ( 75.0, 89.0 ), ( 83.0, 25.0 ) ]]
+b = [[ ( 2.0, 36.0 ), ( 17.0, 28.0 ) ], [ ( 2.0, 36.0 ), ( 36.0, 90.0 ) ], [ ( 15.0, 25.0 ), ( 41.0, 4.0 ) ], [ ( 22.0, 11.0 ), ( 34.0, 41.0 ) ], [ ( 47.0, 44.0 ), ( 65.0, 57.0 ) ], [ ( 49.0, 40.0 ), ( 60.0, 61.0 ) ], [ ( 50.0, 32.0 ), ( 79.0, 71.0 ) ], [ ( 51.0, 87.0 ), ( 92.0, 46.0 ) ], [ ( 57.0, 17.0 ), ( 96.0, 5.0 ) ], [ ( 75.0, 89.0 ), ( 83.0, 25.0 ) ], [ ( 83.0, 15.0 ), ( 93.0, 15.0 ) ]]
+
 print("======================\n      INSERTING\n======================")
 for seg in a:
     print(seg)
     bst.insert(seg)
+print("======================\n      NEIGHBORS\n======================")
+for i in range (1, len(b) - 1):
+    segs = bst.get_neighbours(b[i])
+    print(segs[0], b[i], segs[1])
+    print(segs[0] == b[i-1])
+    print(segs[1] == b[i+1])
 print("======================\n      REMOVING\n======================")
 print(bst.is_empty())
 for seg in a:
     print(seg)
     n = bst.remove(seg)
+
 print(bst.is_empty())
