@@ -89,9 +89,7 @@ class SegmentationProblem(util.Problem):
         while (j > 0 and state[j-1] != ' '): j -= 1
         word = state[j:]
         if(action == ' '):
-            cst = self.unigramCost(word)
-            if (cst < 10.0):
-                return -self.unigramCost(word)
+            return self.unigramCost(word)
         cost1 = self.unigramCost(word)
         if(word == ''): cost1 = 0.0
         cost = self.unigramCost(word + action) - cost1
@@ -119,11 +117,19 @@ class VowelInsertionProblem(util.Problem):
         self.bigramCost = bigramCost
         self.possibleFills = possibleFills
         self.fills = []
-        if (len(queryWords) == 1):
+        self.not_word = "cnbdfbzadfbzfbasfaefafgdggsdgscvdvndsa"
+        self.threshold = bigramCost("the", self.not_word)
+        if (len(queryWords) <= 1):
             self.fills = queryWords
         else:
+            #theshhold is based on the math behind bigramCost
+            # a commom word followed by a word that will never appear 
+            # is the maximum possible value of a bigramCost funciton
+            # !!! this checks if the first word is in the corpus !!!
             for i in range (len(queryWords)):
-                self.fills.append(possibleFills(queryWords[i]))
+                possible = [word for word in possibleFills(queryWords[i]) if len(word) > 1]
+                #print(possible)
+                self.fills.append(possible)
 
     def isState(self, state):
         """ Metodo  que implementa verificacao de estado """
@@ -168,8 +174,9 @@ class VowelInsertionProblem(util.Problem):
     def isGoalState(self, state):
         """ Metodo que implementa teste de meta """
         wds = get_words(state)
-        # for i in range(len(wds) - 1):
-        #     if (self.bigramCost(wds[i], wds[i+1]) > 12.62):
+        # checks if every word in corpus - USELESS/Possible damage
+        # for i in range(len(wds)):
+        #     if (self.bigramCost(wds[i], self.not_word) >= self.threshold):
         #         return False
         for i in range(len(wds)):
             if (wds[i] not in self.fills[i]):
@@ -179,22 +186,28 @@ class VowelInsertionProblem(util.Problem):
     def stepCost(self, state, action):
         """ Metodo que implementa funcao custo """
         wds = get_words(state)
+        add = 1
         if (len(wds) == 1): return 0.0
         i = action[1]
+        if (self.bigramCost(action[0], self.not_word) >= self.threshold):
+            #Word is not in corpus
+            add = 15
+        ret = 0
         if (i == 0):
-            b1 = self.bigramCost(wds[i], wds[i + 1])
-            n_b1 = self.bigramCost(action[0], wds[i+1])
-            return n_b1 - b1
-        if (i == len(wds) - 1):
+            b1 = self.bigramCost(wds[0], wds[1])
+            n_b1 = self.bigramCost(action[0], wds[1])
+            ret = n_b1 - b1
+        elif (i == len(wds) - 1):
             b2 = self.bigramCost(wds[i-1], wds[i])
             n_b2 = self.bigramCost(wds[i-1], action[0])
-            return n_b2 - b2
-
-        b1 = self.bigramCost(wds[i-1], wds[i])
-        b2 = self.bigramCost(wds[i], wds[i+1])
-        n_b1 = self.bigramCost(wds[i-1], action[0])
-        n_b2 = self.bigramCost(action[0],wds[i+1])
-        return (n_b1+n_b1) - (b1 + b2)
+            ret = n_b2 - b2
+        else:
+            b1 = self.bigramCost(wds[i-1], wds[i])
+            b2 = self.bigramCost(wds[i], wds[i+1])
+            n_b1 = self.bigramCost(wds[i-1], action[0])
+            n_b2 = self.bigramCost(action[0],wds[i+1])
+            ret = (n_b1+n_b1) - (b1+b2)
+        return ret + add
 
 
 
@@ -235,17 +248,19 @@ def main():
     """
     unigramCost, bigramCost, possibleFills  =  getRealCosts()
     
-    resulSegment = segmentWords('thisisnotmybeautifulhouse', unigramCost)
-    print(resulSegment)
+    #resulSegment = segmentWords('thisisnotmybeautifulhouse', unigramCost)
+    #print(resulSegment)
     #print(f'assimpleasthat = {unigramCost("assimpleasthat")}')
     #print(f'as simple as that = {unigramCost("as")}, {unigramCost("simple")}, {unigramCost("as")}, {unigramCost("tha")}')
     
 
-    resultInsert = insertVowels('ngh lrdy'.split(), bigramCost, possibleFills)
-    # print(f'm pa = {bigramCost("m", "pa")}')
-    # print(f'me up = {bigramCost("me", "up")}')
-    # print(f'enough already = {bigramCost("enough", "already")}')
-    # print(f'ngh lrdy = {bigramCost("ngh", "lrdy")}')
+    resultInsert = insertVowels('wld lk t hv mr lttrs'.split(), bigramCost, possibleFills)
+    #print(f'om pa = {bigramCost("om", "pa")}')
+    #print(f'me up = {bigramCost("me", "up")}')
+    print(f'a cnbdfbzadfbzfbascvdvndsa = {bigramCost("a", "cnbdfbzadfbzfbascvdvndsa")}')
+    print(f'enough already = {bigramCost("enough", "already")}')
+    print(f'ngh lrdy = {bigramCost("ngh", "lrdy")}')
+
     # print(f'would like = {bigramCost("would", "like")}')
     # print(f'like to = {bigramCost("like", "to")}')
     # print(f'to have = {bigramCost("to", "have")}')
