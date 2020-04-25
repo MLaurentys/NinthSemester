@@ -16,6 +16,11 @@ to_set([H|T], S, [H|C]) :-
     !,
     to_set(T, [H|S], C).
 
+perm([], []).
+perm([H|X],Y) :-
+    perm(X, Y2),
+    select(H, Y, Y2).
+
 lista_para_conjunto(L, C) :- 
     to_set(L, [], C).
 %
@@ -23,38 +28,33 @@ lista_para_conjunto(L, C) :-
 %
 % Uses function from 1
 
-mesmo_conjunto_fix([], [], [], []).
-mesmo_conjunto_fix(_, _, [], []).
-mesmo_conjunto_fix(Xb, Yb, [Hx|Tx], []) :-
-    member(Hx, Yb),
-    mesmo_conjunto_fix(Xb, Yb, Tx, []).
+% mesmo_conjunto_fix([], [], [], []).
+% mesmo_conjunto_fix(_, _, [], []).
+% mesmo_conjunto_fix(Xb, Yb, [Hx|Tx], []) :-
+%     member(Hx, Yb),
+%     mesmo_conjunto_fix(Xb, Yb, Tx, []).
     
-mesmo_conjunto_fix(Xb, Yb, [], [Hy|Ty]) :-
-    member(Hy, Xb),
-    mesmo_conjunto_fix(Xb, Yb, [], Ty).
+% mesmo_conjunto_fix(Xb, Yb, [], [Hy|Ty]) :-
+%     member(Hy, Xb),
+%     mesmo_conjunto_fix(Xb, Yb, [], Ty).
 
-mesmo_conjunto_fix(Xb, Yb, [Hx|Tx], [Hy|Ty]) :-
-    member(Hx, Yb),
-    member(Hy, Xb),
-    mesmo_conjunto_fix(Xb, Yb, Tx, Ty).
+% mesmo_conjunto_fix(Xb, Yb, [Hx|Tx], [Hy|Ty]) :-
+%     member(Hx, Yb),
+%     member(Hy, Xb),
+%     mesmo_conjunto_fix(Xb, Yb, Tx, Ty).
 
-mesmo_conjunto([], []).
-mesmo_conjunto([], _) :- !, fail.
-mesmo_conjunto(_, []) :- !, fail.
+% mesmo_conjunto([], []).
 
 mesmo_conjunto(X, Y) :-
     lista_para_conjunto(X, Xf),
-    lista_para_conjunto(Y, Yf),
-    mesmo_conjunto_fix(Xf, Yf, Xf, Yf).
+    %mesmo_conjunto_fix(Xf, Yf, Xf, Yf),
+    perm(Xf, Y).
 
 %
 % 3
 %
 % Uses function from 1
-perm([], []).
-perm([H|X],Y) :-
-    perm(X, Y2),
-    select(H, Y, Y2).
+
 
 append_to([], L2, L2).
 
@@ -64,8 +64,7 @@ uniao_conjunto(Cs, Ds, Esfp) :-
     lista_para_conjunto(Cs, Csf),
     lista_para_conjunto(Ds, Dsf),
     append_to(Csf, Dsf, Es),
-    lista_para_conjunto(Es, Esf),
-    findall(X, perm(Esf, X), Esfp).
+    lista_para_conjunto(Es, Esfp).
 
 %
 % 4
