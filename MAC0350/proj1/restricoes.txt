@@ -1,0 +1,33 @@
+Restrições de Integridade
+Entidade paciente
+ atributo nome_paciente: string de tamanho variável
+ atributo endereco_paciente: string de tamanho variável
+ atributo nascimento_paciente: date (dd/mm/aaaa)
+ atributo cpf_paciente: 11 dígitos, não pode ser NULL (por ser chave primária)
+Entidade amostra
+ atributo codigo_amostra: inteiro não negativo, não pode ser NULL (por ser chave primária)
+ atributo data_amostra: datetime (dd/mm/aaaa hh:nn:ss), não pode ser NULL
+ atributo tipo_material: char(64)
+Entidade virus
+ atributo tipo_virus:  char(64), não pode ser NULL (por ser chave primária)
+Entidade exame
+ atributo tipo_exame: char(16)
+ atributo data_exame: datetime (dd/mm/aaaa hh:nn:ss), não pode ser NULL (por ser chave primária)
+Entidade servico
+ atributo tipo: char(16)
+ atributo descricao: string de tamanho variável
+ atributo codigo_servico: inteiro não negativo, não pode ser NULL (por ser chave primária)
+Entidade perfil
+ atributo funcao: char(16), não pode ser NULL (por ser chave primária)
+Entidade usuario
+ atributo login: string de tamanho variável, não pode ser NULL (por ser chave primária)
+ atributo senha: string de tamanho mínimo 8 e tamanho máximo variável, não pode ser NULL
+ atributo nome_usuario: string de tamanho variável
+ atributo endereco_usuario: string de tamanho variável
+ atributo area_pesquisa: string de tamanho variável
+ atributo instituicao: string de tamanho variável
+ atributo nascimento_usuario: date (dd/mm/aaaa)
+Relacionamento concede_servico
+ atributo servicos_disponiveis: inteiros não negativos
+Relacionamento realiza_servico
+ atributo data_servico: datetime (dd/mm/aaaa hh:nn:ss), não pode ser NULL (por ser chave primária)

@@ -65,11 +65,23 @@ def r_squared(y, y_hat):
     :return: r^2 value
     :rtype: float
     """
+
+    # R squared, as computed below in the commented rows,
+    # was not correct
+    
+    # y_mean = np.mean(y)
+    # ssres = np.sum(np.square(y - y_mean))
+    # ssexp = np.sum(np.square(y_hat - y_mean))
+    # sstot = ssres + ssexp
+    # return 1 - (ssexp / sstot)
+
+    # The correct way is :
+    # see, for instance, https://en.wikipedia.org/wiki/Coefficient_of_determination
     y_mean = np.mean(y)
-    ssres = np.sum(np.square(y - y_mean))
-    ssexp = np.sum(np.square(y_hat - y_mean))
-    sstot = ssres + ssexp
-    return 1 - (ssexp / sstot)
+    ssres = np.sum(np.square(y - y_hat))
+    sstot = np.sum(np.square(y - y_mean))
+    return 1 - (ssres / sstot)
+
 
     
 def randomize_in_place(list1, list2, init=0):
