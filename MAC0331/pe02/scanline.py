@@ -55,8 +55,8 @@ def make_event_points (segs):
     heap = queue.PriorityQueue()
     hmap = {}
     for ind in range(len(segs)):
-        make_event (hmap, heap, segs[ind], segs[ind].init, 0)
-        make_event (hmap, heap, segs[ind], segs[ind].to, 1)
+        make_event (hmap, heap, ind, segs[ind].init, 0)
+        make_event (hmap, heap, ind, segs[ind].to, 1)
     return heap, hmap
 
 
@@ -64,15 +64,15 @@ def make_event_points (segs):
 ## Scanline
 ##
 
-def verify_n_intersection (seg, neigh, msg):
+def verify_n_intersection (seg, neigh, msg = ""):
     if (not neigh): return False, None
     seg.hilight(color_line="blue")
     neigh.hilight(color_line="blue")
     if (seg_intersects(seg, neigh)):
         int_point = intersection_locator(seg, neigh)
-        control.plot_disc(int_point[0], int_point[1], "yellow", 6.0)
+        control.plot_disc(int_point.coordinate[0], int_point.coordinate[1], "yellow", 6.0)
         print("Enquanto comparava", seg, neigh)
-        print(msg, int_point[0], int_point[1])
+        print(msg, int_point.coordinate[0], int_point.coordinate[1])
         return True, int_point
     control.sleep()
     seg.hilight(color_line="green")
@@ -80,31 +80,87 @@ def verify_n_intersection (seg, neigh, msg):
     return False, None
 
 def treat_left(s, bst):
-    msg = "ACHOU INSERINDO:"
-    new_intersections = []
     s.hilight(color_line="green")
     control.sleep()
+    msg = "ACHOU INSERINDO:"
+    new_intersections = []
     bst.insert(s)
     ns = bst.get_neighbours(s)
-    ret1, seg1 = verify_n_intersection(s, ns[0], msg)
+    ret1, pt1 = verify_n_intersection(s, ns[0], msg)
     if (ret1):
-        new_intersections.append(seg1)
-    ret2, seg2 = verify_n_intersection(s, ns[1], msg)
+        new_intersections.append(pt1)
+    ret2, pt2 = verify_n_intersection(s, ns[1], msg)
     if (ret2) :
-        new_intersections.append(seg2)
+        new_intersections.append(pt2)
     return ret1 or ret2, new_intersections
 
 def treat_right (s, bst):
-    msg = "ACHOU REMOVENDO"
-    ret = False
     s.hilight(color_line="cyan")
     control.sleep()
+    msg = "ACHOU REMOVENDO"
+    new_intersections = []
+    ret = False
     bst.remove(s)
     ns = bst.get_neighbours(s)
-    if(ns[0] and ns[1]):
-        ret = verify_n_intersection(ns[0], ns[1], msg)
-    return ret
-    control.sleep()
+    if(ns[0] is not None and ns[1] is not None):
+        ret, pt1 = verify_n_intersection(ns[0], ns[1], msg)
+        if (ret): new_intersections.append(pt1)
+    return ret, new_intersections
+
+def treat_intersection (segs, bst):
+    msg = "ACHOU OLHANDO INTERSECCAO"
+    def define_pred(seg, ns):
+        if ns[0] is not None:
+            if not at_left(seg.init, seg.to, ns[0].init) \
+                and not is_colinear(seg.init, seg.to, ns[0].init):
+                return ns[0]
+        if ns[1] is not None:
+            if not at_left(seg.init, seg.to, ns[1].init) \
+                and not is_colinear(seg.init, seg.to, ns[1].init):
+                return ns[1]
+        return None
+    def define_suc(seg, ns):
+        if ns[0] is not None:
+            if at_left(seg.init, seg.to, ns[0].init):
+                return ns[0]
+        elif ns[1] is not None:
+            if at_left(seg.init, seg.to, ns[1].init):
+                return ns[1]
+        return None
+    new_intersections = []
+    ret = ret1 = ret2 = False
+    seg1 = segs[0]
+    seg2 = segs[1]
+    ns_1 = bst.get_neighbours(seg1)
+    ns_2 = bst.get_neighbours(seg2)
+    pred = define_pred(seg1, ns_1)
+    suc = define_suc(seg2, ns_2)
+    bst.remove(seg1)
+    bst.remove(seg2)
+    seg1.mark = True
+    seg2.mark = True
+    bst.insert(seg2)
+    bst.insert(seg1)
+    if pred is not None:
+        pred.hilight(color_line="magenta")
+        seg2.hilight(color_line="magenta")
+        print("Pred = ", pred, "Seg = ", seg2)
+        control.sleep()
+        ret1, pt1 = verify_n_intersection(seg2, pred, msg)
+        if (ret1): new_intersections.append(pt1)
+        pred.hilight(color_line="blue")
+        seg2.hilight(color_line="blue")
+    if suc is not None:
+        print("Suc = ", suc, "Seg = ", seg1)
+        suc.hilight(color_line="magenta")
+        seg1.hilight(color_line="magenta")
+        control.sleep()
+        ret2, pt2 = verify_n_intersection(seg1, suc, msg)
+        if (ret2): new_intersections.append(pt2)
+        suc.hilight(color_line="blue")
+        seg1.hilight(color_line="blue")
+    return ret1 or ret2, new_intersections
+
 
 class intersection_locator:
     def __init__(self, seg1, seg2):
@@ -124,31 +180,59 @@ def Scanline (segments):
         segments[i].plot()
     
     while (not heap.empty()):
+        bst.print_tree()
         pt = heap.get()
         circ = control.plot_circle(pt.node.x, pt.node.y, "green", 2)
         #print_aux1(pt, segments)
         control.sleep()
-        if (len(pt.left) + len(pt.right) > 1):
-            control.plot_disc(pt.node.x, pt.node.y, "yellow", 6.0)
-            print("ACHOU IMEDIATAMENTE: no ponto ", pt.node.x, pt.node.y )
+        # if (len(pt.left) + len(pt.right) + len(pt.intersections) > 1):
+        #     for i in range (len(pt.left)):
+        #         bseg = segments[pt.left[i]]
+        #         for j in range (i + 1, len(pt.left)):
+        #             pt.add_to_segment([bseg, segments[pt.left[j]]], -1)
+        #             new_int = intersection_locator(bseg, segments[pt.left[j]])
+        #             list_of_intersections.append(new_int)
+        #         for j in range (len(pt.right)):
+        #             pt.add_to_segment([bseg, segments[pt.right[j]]], -1)
+        #             new_int = intersection_locator(bseg, segments[pt.right[j]])
+        #             list_of_intersections.append(new_int)
+                # for inter in pt.intersections:
+                #     if (inter[0] != bseg)
+            # control.plot_disc(pt.node.x, pt.node.y, "yellow", 6.0)
+            # print("ACHOU IMEDIATAMENTE: no ponto ", pt.node.x, pt.node.y )
         # Start of a new segment
         for seg in pt.left:
             intersected, intersections = treat_left(segments[seg], bst)
             if(intersected):
-                for inter in intersection:
-                    if(inter not in hmap):
-                        list_of_intersections.append(inter)
+                for inter in intersections:
+                    make_event(hmap, heap, [inter.seg1, inter.seg2], inter.coordinate, -1)
+                    list_of_intersections.append(inter)
         #End of an exhisting segment
         for seg in pt.right:
-            if(treat_right(segments[seg], bst)):
-                return True
-
+            intersected, intersections = treat_right(segments[seg], bst)
+            if(intersected):
+                for inter in intersections:
+                    make_event(hmap, heap, [inter.seg1, inter.seg2], inter.coordinate, -1)
+                    list_of_intersections.append(inter)
         #Intersections on the point (no specific order)
         for segs in pt.intersections:
-            control.sleep()
+            intersected, intersections = treat_intersection(segs, bst)
+            if(intersected):
+                for inter in intersections:
+                    make_event(hmap, heap, [inter.seg1, inter.seg2], inter.coordinate, -1)
+                    list_of_intersections.append(inter)
         control.plot_delete(circ)
+    print_aux2(list_of_intersections)
+    return list_of_intersections
 
 # auxiliary prints
+def print_aux2(list_intersections):
+    for inter in list_intersections:
+        print("\n\n============")
+        print("point = ", inter.coordinate)
+        print("segment 1 = ", inter.seg1)
+        print("segment 2 = ", inter.seg2)
+
 def print_aux1(pt, segs):
     print(pt.node.x, pt.node.y)
     print("Ponto extremo dos segmentos:")

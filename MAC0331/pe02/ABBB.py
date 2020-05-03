@@ -23,8 +23,27 @@ class ABBB:
         else:
             par.right = nd
 
+    def cheat_insert(self, val, compare):
+        nd = self._Node(val)
+        if (self._root == None):
+            self._root = nd
+            return
+        node = self._root
+        par = None
+        while (node):
+            par = node
+            if (compare(nd, node)):
+                node = node.left
+            else:
+                node = node.right
+        if (compare(nd, par)):
+            par.left = nd
+        else:
+            par.right = nd
+
     def _remove(self, cur_node, node):
         if (cur_node is None):
+            print ("ERROOOOO NAO REMOVEU!!!!!!!!!!!")
             return None
         if (node < cur_node):
             cur_node.left = self._remove(cur_node.left, node)
@@ -61,6 +80,19 @@ class ABBB:
 
     def is_empty(self):
         return self._root == None
+
+    def print_tree(self):
+        print("===== TREE =========\n")
+        if self._root is not None:
+            self._print_tree(self._root)
+        print("===== END =========\n")
+
+    def _print_tree(self, tree_node):
+        if tree_node.left is not None:
+            self._print_tree(tree_node.left)
+        print(tree_node.seg)
+        if tree_node.right is not None:
+            self._print_tree(tree_node.right)
 
     def _get_neighbour(self, node):
         def find_left(start, node):
