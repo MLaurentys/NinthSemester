@@ -65,19 +65,22 @@ def make_event_points (segs):
 ##
 
 def verify_n_intersection (seg, neigh, msg = ""):
-    if (not neigh): return False, None
+    b_ret = False
+    pt_ret = None
+    if (neigh is None): return b_ret, pt_ret
     seg.hilight(color_line="blue")
     neigh.hilight(color_line="blue")
+    control.sleep()
     if (seg_intersects(seg, neigh)):
         int_point = intersection_locator(seg, neigh)
         control.plot_disc(int_point.coordinate[0], int_point.coordinate[1], "yellow", 6.0)
         print("Enquanto comparava", seg, neigh)
         print(msg, int_point.coordinate[0], int_point.coordinate[1])
-        return True, int_point
-    control.sleep()
+        b_ret = True
+        pt_ret =  int_point
     seg.hilight(color_line="green")
     neigh.hilight(color_line="green")
-    return False, None
+    return b_ret, pt_ret
 
 def treat_left(s, bst):
     s.hilight(color_line="green")
@@ -148,8 +151,8 @@ def treat_intersection (segs, bst):
         control.sleep()
         ret1, pt1 = verify_n_intersection(seg2, pred, msg)
         if (ret1): new_intersections.append(pt1)
-        pred.hilight(color_line="blue")
-        seg2.hilight(color_line="blue")
+        pred.hilight(color_line="green")
+        seg2.hilight(color_line="green")
     if suc is not None:
         print("Suc = ", suc, "Seg = ", seg1)
         suc.hilight(color_line="magenta")
@@ -157,8 +160,8 @@ def treat_intersection (segs, bst):
         control.sleep()
         ret2, pt2 = verify_n_intersection(seg1, suc, msg)
         if (ret2): new_intersections.append(pt2)
-        suc.hilight(color_line="blue")
-        seg1.hilight(color_line="blue")
+        suc.hilight(color_line="green")
+        seg1.hilight(color_line="green")
     return ret1 or ret2, new_intersections
 
 
@@ -178,28 +181,11 @@ def Scanline (segments):
     bst = ABBB(Node_Seg)
     for i in range (len(segments)):
         segments[i].plot()
-    
     while (not heap.empty()):
         bst.print_tree()
         pt = heap.get()
         circ = control.plot_circle(pt.node.x, pt.node.y, "green", 2)
-        #print_aux1(pt, segments)
         control.sleep()
-        # if (len(pt.left) + len(pt.right) + len(pt.intersections) > 1):
-        #     for i in range (len(pt.left)):
-        #         bseg = segments[pt.left[i]]
-        #         for j in range (i + 1, len(pt.left)):
-        #             pt.add_to_segment([bseg, segments[pt.left[j]]], -1)
-        #             new_int = intersection_locator(bseg, segments[pt.left[j]])
-        #             list_of_intersections.append(new_int)
-        #         for j in range (len(pt.right)):
-        #             pt.add_to_segment([bseg, segments[pt.right[j]]], -1)
-        #             new_int = intersection_locator(bseg, segments[pt.right[j]])
-        #             list_of_intersections.append(new_int)
-                # for inter in pt.intersections:
-                #     if (inter[0] != bseg)
-            # control.plot_disc(pt.node.x, pt.node.y, "yellow", 6.0)
-            # print("ACHOU IMEDIATAMENTE: no ponto ", pt.node.x, pt.node.y )
         # Start of a new segment
         for seg in pt.left:
             intersected, intersections = treat_left(segments[seg], bst)

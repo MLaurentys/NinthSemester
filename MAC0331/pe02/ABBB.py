@@ -60,8 +60,8 @@ class ABBB:
                 return ret
             else:
                 n_node = self.get_min(cur_node.right)
-                s,e = n_node.get_val()
-                cur_node.set_val(s,e)
+                st, en, pm, sg = n_node.get_val()
+                cur_node.set_val(st, en, pm, sg)
                 cur_node.right = self._remove(cur_node.right, n_node)
         return cur_node
 

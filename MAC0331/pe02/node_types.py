@@ -65,14 +65,16 @@ class Node_Seg:
         self.end = Node(seg.to)
 
     def get_val(self):
-        return self.start, self.end
+        return self.start, self.end, self.past_middle, self.seg
 
     def mark(self):
         self.mark = True
 
-    def set_val(self, start, end):
+    def set_val(self, start, end, pm, seg):
         self.start = start
         self.end = end
+        self.past_middle = pm
+        self.seg = seg
 
     def __lt__(self, other):
         s_comp_1 = self.start
