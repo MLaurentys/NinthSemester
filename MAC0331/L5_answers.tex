@@ -1,0 +1,60 @@
+
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{float}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{tikz}
+
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\lstset{columns=fullflexible,
+	mathescape=true,
+	numbers=left,
+	stepnumber=1,
+	morekeywords={return, if,else,  while, True, False, function, or},
+	xleftmargin=5.0ex
+}
+
+\title{\vspace{-4.0cm}MAC0331 - Lista 1}
+\author{Matheus T. de Laurentys, 9793714}
+
+\begin{document}
+	\maketitle
+	\noindent
+	\textbf{Q 2:} \\
+	\begin{lstlisting}
+function ``point.<"(this, other):
+	if (this.y == other.y): return this.x < other.x
+	return this.y < other.y
+
+function binary_search (arr, min, max, pt):
+	if min > max: return false
+	mid = min/2 + max/2
+	if arr[mid] < pt: return binary_search(arr, mid + 1, last, pt)
+	else if pt < arr[mid]: return binary_search(arr, min, mid - 1, pt)
+	else: return true
+	
+function belong_polygon (n, P, k, e, d, q):
+	return binary_search (e, 0, k-1, q) or binary_search (d, 0, n-k+1, q)
+	\end{lstlisting}
+	
+	\noindent
+	\textbf{Q 7:} \\
+	\textbf{a)}: At the moment of line five's execution, it is known that there is one extreme point above the point X and one below or at the same ``height". What is left to know is if this segment is to the right of the point. Instead of checking if the segment will intersect with a possible ray crossing from X towards $+\inf$, one could simply check if X is to the left of the segment. It happens that we can use the function at\_left created early on in the class to decide that.
+	
+	\noindent
+	\textbf{b)}: The problem that version one of the algorithm fails to take into account is if the point is colinear with any of the segments. While the form version two manages this problem is nice, it would be possible to add an extra check to \text{line 6}. That is, instead of just checking for proper intersection, check for colinearity too.
+\end{document}
+
+
+
+
+
+
+
+
+
+

@@ -74,8 +74,8 @@ def verify_n_intersection (seg, neigh, msg = ""):
     if (seg_intersects(seg, neigh)):
         int_point = intersection_locator(seg, neigh)
         control.plot_disc(int_point.coordinate[0], int_point.coordinate[1], "yellow", 6.0)
-        print("Enquanto comparava", seg, neigh)
-        print(msg, int_point.coordinate[0], int_point.coordinate[1])
+        #print("Enquanto comparava", seg, neigh)
+        #print(msg, int_point.coordinate[0], int_point.coordinate[1])
         b_ret = True
         pt_ret =  int_point
     seg.hilight(color_line="green")
@@ -147,14 +147,14 @@ def treat_intersection (segs, bst):
     if pred is not None:
         pred.hilight(color_line="magenta")
         seg2.hilight(color_line="magenta")
-        print("Pred = ", pred, "Seg = ", seg2)
+        #print("Pred = ", pred, "Seg = ", seg2)
         control.sleep()
         ret1, pt1 = verify_n_intersection(seg2, pred, msg)
         if (ret1): new_intersections.append(pt1)
         pred.hilight(color_line="green")
         seg2.hilight(color_line="green")
     if suc is not None:
-        print("Suc = ", suc, "Seg = ", seg1)
+        #print("Suc = ", suc, "Seg = ", seg1)
         suc.hilight(color_line="magenta")
         seg1.hilight(color_line="magenta")
         control.sleep()
@@ -182,7 +182,7 @@ def Scanline (segments):
     for i in range (len(segments)):
         segments[i].plot()
     while (not heap.empty()):
-        bst.print_tree()
+        #bst.print_tree()
         pt = heap.get()
         circ = control.plot_circle(pt.node.x, pt.node.y, "green", 2)
         control.sleep()
