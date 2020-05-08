@@ -1,18 +1,33 @@
+from geocomp.lineintersections.node_types import Node_Seg
+
 # BST data structure that should work for any comparable (class that implements __lt__)
 class ABBB:
-    def __init__(self, Nd_constr):
+    def __init__(self, node_ctor=None):
         super().__init__()
         self._root = None
-        self._Node = Nd_constr
+        self._Node = node_ctor
 
-    def insert(self, val):
+    def get (self, val):
         nd = self._Node(val)
+        if (self._root == None):
+            return None
+        node = self._root
+        while (node is not None):
+            if (nd < node):
+                node = node.left
+            elif node < nd:
+                node = node.right
+            else:
+                break
+        return node
+
+    def _insert (self, nd):
         if (self._root == None):
             self._root = nd
             return
         node = self._root
         par = None
-        while (node):
+        while (node is not None):
             par = node
             if (nd < node):
                 node = node.left
@@ -23,23 +38,13 @@ class ABBB:
         else:
             par.right = nd
 
-    def cheat_insert(self, val, compare):
-        nd = self._Node(val)
-        if (self._root == None):
-            self._root = nd
-            return
-        node = self._root
-        par = None
-        while (node):
-            par = node
-            if (compare(nd, node)):
-                node = node.left
-            else:
-                node = node.right
-        if (compare(nd, par)):
-            par.left = nd
+    def insert(self, val):
+        if (type(val) == Node_Seg): #very ugly line i cannot replace?
+            self._insert(val)
         else:
-            par.right = nd
+            nd = self._Node(val)
+            self._insert(nd)
+
 
     def _remove(self, cur_node, node):
         if (cur_node is None):
@@ -63,12 +68,18 @@ class ABBB:
                 st, en, pm, sg = n_node.get_val()
                 cur_node.set_val(st, en, pm, sg)
                 cur_node.right = self._remove(cur_node.right, n_node)
+                n_node.left = None
+                n_node.right = None
         return cur_node
 
 
     def remove(self, val):
-        nd = self._Node(val)
-        self._root = self._remove(self._root, nd)
+        if (type(val) == Node_Seg):
+            self._root = self._remove(val)
+        else:
+            nd = self._Node(val)
+            nd.change_key(nd.end.get_point())
+            self._root = self._remove(self._root, nd)
 
     def get_min(self, node):
         par = None
@@ -117,8 +128,11 @@ class ABBB:
         return find_left(self._root, node), find_right(self._root, node)
 
     def get_neighbours(self, val):
-        nd = self._Node(val)
-        ns = self._get_neighbour(nd)
-        ns1 = ns[0].seg if(ns[0]) else None
-        ns2 = ns[1].seg if(ns[1]) else None
+        if type(val) == Node_Seg:
+            ns = self._get_neighbour(val)
+        else:
+            nd = self._Node(val)
+            ns = self._get_neighbour(nd)
+        ns1 = ns[0]
+        ns2 = ns[1]
         return ns1, ns2

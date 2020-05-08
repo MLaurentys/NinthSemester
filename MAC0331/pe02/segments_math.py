@@ -2,6 +2,27 @@ from geocomp.common import prim
 from geocomp.common import segment
 
 ##
+## Auxiliary function that does pre-processing
+##
+
+# order of segments is based on starting point only
+def compare_segments(s1, s2):
+    return compare_points(s1.init, s2.init)
+
+# left before right, then bottom before top
+def compare_points(pt1, pt2):
+    if(pt1.x == pt2.x):
+        return pt1.y - pt2.y
+    return pt1.x - pt2.x
+
+# Makes segment.start <= segment.end
+def fix_segments (l):
+    for i in range (len(l)):
+        res = compare_points(l[i].init, l[i].to)
+        if (res > 0):
+            l[i].init, l[i].to = l[i].to, l[i].init
+            
+##
 ## Functions reponsible for calculating intersections
 ##
 

@@ -34,38 +34,95 @@
 
 from __future__ import absolute_import
 
-from .abctree import ABCTree
+from geocomp.lineintersections.abctree import ABCTree
 
 __all__ = ['RBTree']
 
-
-class Node(object):
-    """Internal object, represents a tree node."""
-    __slots__ = ['key', 'value', 'red', 'left', 'right']
-
-    def __init__(self, key=None, value=None):
-        self.key = key
-        self.value = value
-        self.red = True
+class Node:
+    def __init__(self, pt):
+        super().__init__()
         self.left = None
         self.right = None
+        self.x = pt[0]
+        self.y = pt[1]
+
+    def __lt__(self, other):
+        if (self.x == other.x):
+            return self.y < other.y
+        else:
+            return self.x < other.x
+
+class RBNode (object):
+    """Internal object, represents a tree node."""
+    __slots__ = ['seg', 'start', 'end', 'red', 'past_middle', 'key', 'left', 'right']
+
+    def __init__(self, seg):
+        if seg is None:
+            self.seg = None
+            self.start = None
+            self.end = None
+        else:
+            self.seg = seg
+            self.start = Node(seg.init)
+            self.end = Node(seg.to)
+        self.red = True
+        self.past_middle = False
+        self.key = self.start
+        self.left = None
+        self.right = None
+
+    def set_key(self, node) :
+        self.key = node
 
     def free(self):
         self.left = None
         self.right = None
         self.key = None
-        self.value = None
+        self.seg = None
+        self.start = None
+        self.end = None
+    def __getitem__(self, pos):
+        """x[pos], where pos is 0 (left) or 1 (right)."""
+        return self.left if pos == 0 else self.right
 
-    def __getitem__(self, key):
-        """N.__getitem__(key) <==> x[key], where key is 0 (left) or 1 (right)."""
-        return self.left if key == 0 else self.right
+    def __setitem__(self, pos, node):
+        """x[pos]=value, where pos is 0 (left) or 1 (right)."""
+        if pos == 0:
+            self.left = node
+        elif pos == 1:
+            self.right = node
+            
+    def get_val(self):
+        return self.start, self.end, self.past_middle, self.seg
 
-    def __setitem__(self, key, value):
-        """N.__setitem__(key, value) <==> x[key]=value, where key is 0 (left) or 1 (right)."""
-        if key == 0:
-            self.left = value
+    def mark(self):
+        self.mark = True
+
+    def set_val(self, start, end, pm, seg):
+        self.start = start
+        self.end = end
+        self.past_middle = pm
+        self.seg = seg
+
+    def __lt__(self, other):
+        s_comp_1 = self.start
+        s_comp_2 = self.end
+        o_comp_1 = other.start
+        o_comp_2 = other.end
+        if self.mark:
+            s_comp_1 = self.end
+            s_comp_2 = self.start
+        if other.mark:
+            o_comp_1 = other.end
+            o_comp_2 = other.start
+
+        if s_comp_1.y < o_comp_1.y:
+            return True
         else:
-            self.right = value
+            if (o_comp_1.y < s_comp_1.y):
+                return False
+            else:
+                return s_comp_2.y < o_comp_2.y
 
 
 def is_red(node):
@@ -115,32 +172,31 @@ class RBTree(ABCTree):
     see also abctree.ABCTree() class.
     """
 
-    def _new_node(self, key, value):
+    def _new_node(self, seg):
         """Create a new tree node."""
         self._count += 1
-        return Node(key, value)
+        return RBNode(seg)
 
-    def insert(self, key, value):
-        """T.insert(key, value) <==> T[key] = value, insert key, value into tree."""
+    def insert(self, seg):
         if self._root is None:  # Empty tree case
-            self._root = self._new_node(key, value)
+            self._root = self._new_node(seg)
             self._root.red = False  # make root black
             return
 
-        head = Node()  # False tree root
+        head = RBNode(None)  # False tree root
         grand_parent = None
         grand_grand_parent = head
         parent = None  # parent
         direction = 0
         last = 0
-
+        new_node = RBNode(seg)
         # Set up helpers
         grand_grand_parent.right = self._root
         node = grand_grand_parent.right
         # Search down the tree
         while True:
             if node is None:  # Insert new node at the bottom
-                node = self._new_node(key, value)
+                node = self._new_node(seg)
                 parent[direction] = node
             elif is_red(node.left) and is_red(node.right):  # Color flip
                 node.red = True
@@ -156,12 +212,18 @@ class RBTree(ABCTree):
                     grand_grand_parent[direction2] = jsw_double(grand_parent, 1 - last)
 
             # Stop if found
-            if key == node.key:
-                node.value = value  # set new value for key
-                break
+            #if not (new_node < node or node < new_node) :
 
             last = direction
-            direction = 0 if key < node.key else 1
+            if new_node < node :
+                direction = 0
+            elif node < new_node :
+                direction = 1
+            else :
+                st, en, pm, sg = new_node.get_val()
+                node.set_val(st, en, pm, sg)
+                break
+
             # Update helpers
             if grand_parent is not None:
                 grand_grand_parent = grand_parent
@@ -172,18 +234,18 @@ class RBTree(ABCTree):
         self._root = head.right  # Update root
         self._root.red = False  # make root black
 
-    def remove(self, key):
+    def remove(self, seg):
         """T.remove(key) <==> del T[key], remove item <key> from tree."""
         if self._root is None:
-            raise KeyError(str(key))
-        head = Node()  # False tree root
+            raise KeyError(str(seg))
+        head = RBNode(None)  # False tree root
         node = head
         node.right = self._root
         parent = None
         grand_parent = None
         found = None  # Found item
         direction = 1
-
+        node_to_remove = RBNode(seg)
         # Search and push a red down
         while node[direction] is not None:
             last = direction
@@ -193,10 +255,11 @@ class RBTree(ABCTree):
             parent = node
             node = node[direction]
 
-            direction = 1 if key > node.key else 0
-
-            # Save found node
-            if key == node.key:
+            if node_to_remove < node :
+                direction = 0
+            elif node < node_to_remove :
+                direction = 1
+            else :
                 found = node
 
             # Push the red node down
@@ -207,7 +270,8 @@ class RBTree(ABCTree):
                 elif not is_red(node[1 - direction]):
                     sibling = parent[1 - last]
                     if sibling is not None:
-                        if (not is_red(sibling[1 - last])) and (not is_red(sibling[last])):
+                        if (not is_red(sibling[1 - last])) \
+                            and (not is_red(sibling[last])):
                             # Color flip
                             parent.red = False
                             sibling.red = True
@@ -226,8 +290,8 @@ class RBTree(ABCTree):
 
         # Replace and remove if found
         if found is not None:
-            found.key = node.key
-            found.value = node.value
+            st, en, pm, sg = node.get_val()
+            found.set_val(st, en, pm, sg)
             parent[int(parent.right is node)] = node[int(node.left is None)]
             node.free()
             self._count -= 1
@@ -237,4 +301,69 @@ class RBTree(ABCTree):
         if self._root is not None:
             self._root.red = False
         if not found:
-            raise KeyError(str(key))
+            raise KeyError(str(seg))
+
+    def _prev_item(self, target):
+        node = self._root
+        prev_node = None
+
+        while node is not None:
+            if target < node:
+                node = node.left
+            elif (prev_node is None) or (prev_node < node):
+                prev_node = node
+                node = node.right
+            else:
+                break
+
+        if node is None:  # stay at dead end (None)
+            return None
+        # found node of key
+        if node.left is not None:
+            # find biggest node of left subtree
+            node = node.left
+            while node.right is not None:
+                node = node.right
+            if prev_node is None:
+                prev_node = node
+            elif prev_node > node:
+                prev_node = node
+        elif prev_node is None:  # given key is smallest in tree
+            prev_node = None
+        return prev_node
+    def _succ_item(self, target):
+        node = self._root
+        succ_node = None
+        while node is not None:
+            if target < node:
+                if (succ_node is None) or (node.key < succ_node.key):
+                    succ_node = node
+                node = node.left
+            elif node < target:
+                node = node.right
+            else:
+                break
+        if node is None:  # stay at dead end
+            return None
+        # found node of key
+        if node.right is not None:
+            # find smallest node of right subtree
+            node = node.right
+            while node.left is not None:
+                node = node.left
+            if succ_node is None:
+                succ_node = node
+            elif node < succ_node:
+                succ_node = node
+        elif succ_node is None:  # given key is biggest in tree
+            succ_node = None
+        return succ_node
+
+    def get_neighbours(self, seg):
+        node = RBNode(seg)
+        prev = self._prev_item(node)
+        succ = self._succ_item(node)
+        p = s = None
+        if prev is not None: p = prev.seg 
+        if succ is not None: s = succ.seg 
+        return p, s 

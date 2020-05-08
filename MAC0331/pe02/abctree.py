@@ -7,7 +7,7 @@
 # License: MIT License
 from __future__ import absolute_import
 import sys
-from .treeslice import TreeSlice
+from geocomp.lineintersections.treeslice import TreeSlice
 from operator import attrgetter
 from copy import deepcopy
 from abc import abstractmethod, abstractproperty
@@ -592,12 +592,16 @@ class CPYTHON_ABCTree(_ABCTree):
     * ceiling_item(key) -> get (k, v) pair, where k is the smallest key greater than or equal to key, O(log(n))
     """
 
-    def __init__(self, items=None):
+    def __init__(self, items=None, node_ctor=None):
         """T.__init__(...) initializes T; see T.__class__.__doc__ for signature"""
         self._root = None
         self._count = 0
         if items is not None:
             self.update(items)
+        if node_ctor is not None:
+            self.node_ctor = node_ctor
+        else:
+            self.node_ctor = None
 
     def clear(self):
         """T.clear() -> None.  Remove all items from T."""

@@ -8,6 +8,7 @@ from geocomp.common import control
 from geocomp import config
 from geocomp import colors
 from geocomp.lineintersections.ABBB import ABBB
+from geocomp.lineintersections.rbtree import RBTree
 from geocomp.lineintersections.node_types import *
 from geocomp.lineintersections.segments_math import *
 
@@ -17,31 +18,14 @@ from geocomp.lineintersections.segments_math import *
 ###
 ##############################
 
-##
-## Auxiliary function that does pre-processing
-##
+#
+# Makes the points the scanline is going to stop at
+#
 
-# order of segments is based on starting point only
-def compare_segments(s1, s2):
-    return compare_points(s1.init, s2.init)
-
-# left before right, then bottom before top
-def compare_points(pt1, pt2):
-    if(pt1.x == pt2.x):
-        return pt1.y - pt2.y
-    return pt1.x - pt2.x
-
-# Makes segment.start <= segment.end
-def fix_segments (l):
-    for i in range (len(l)):
-        res = compare_points(l[i].init, l[i].to)
-        if (res > 0):
-            l[i].init, l[i].to = l[i].to, l[i].init
-
-def make_event (hmap, heap, segment, point, position):
-    #position 0: left
-    #position 1: right
-    #position -1: intersection -> segment = [seg1, seg2]
+def make_event (hmap, heap, segment_nodes, point, position):
+    #position 0: left -> segments_nodes = node
+    #position 1: right -> segments_nodes = node
+    #position -1: intersection -> segment_nodes = [node1, node2]
     if (point in hmap):
         node_event = hmap[point]
         node_event.add_to_segment(segment, position)
@@ -50,36 +34,42 @@ def make_event (hmap, heap, segment, point, position):
         new_event.add_to_segment(segment, position)
         heap.put(new_event)
         hmap[point] = new_event
+
 # Makes initial map and queue of the segments limits
-def make_event_points (segs):
+def make_event_points (node_segs):
     heap = queue.PriorityQueue()
     hmap = {}
-    for ind in range(len(segs)):
-        make_event (hmap, heap, ind, segs[ind].init, 0)
-        make_event (hmap, heap, ind, segs[ind].to, 1)
+    for ind in range(len(node_segs)):
+        make_event (hmap, heap, node_segs[ind], node_segs[ind].start.get_point(), 0)
+        make_event (hmap, heap, node_segs[ind], node_segs[ind].start.get_point(), 1)
     return heap, hmap
 
+def make_segment_nodes (fixed_segments_array):
+    nodes = []
+    for i in range (len(fixed_segments_array)):
+        nodes.append(Node_Seg(fixed_segments_array[i]))
+    return nodes
 
 ##
 ## Scanline
 ##
 
-def verify_n_intersection (seg, neigh, msg = ""):
+def verify_n_intersection (n_seg, neigh, msg = ""):
     b_ret = False
     pt_ret = None
     if (neigh is None): return b_ret, pt_ret
-    seg.hilight(color_line="blue")
+    n_seg.seg.hilight(color_line="blue")
     neigh.hilight(color_line="blue")
     control.sleep()
-    if (seg_intersects(seg, neigh)):
-        int_point = intersection_locator(seg, neigh)
+    if (seg_intersects(n_seg.seg, neigh.seg)):
+        int_point = intersection_locator(n_seg, neigh)
         control.plot_disc(int_point.coordinate[0], int_point.coordinate[1], "yellow", 6.0)
         #print("Enquanto comparava", seg, neigh)
         #print(msg, int_point.coordinate[0], int_point.coordinate[1])
         b_ret = True
         pt_ret =  int_point
-    seg.hilight(color_line="green")
-    neigh.hilight(color_line="green")
+    n_seg.seg.hilight(color_line="green")
+    neigh.seg.hilight(color_line="green")
     return b_ret, pt_ret
 
 def treat_left(s, bst):
@@ -97,20 +87,20 @@ def treat_left(s, bst):
         new_intersections.append(pt2)
     return ret1 or ret2, new_intersections
 
-def treat_right (s, bst):
-    s.hilight(color_line="cyan")
+def treat_right (n_seg, bst):
+    n_seg.seg.hilight(color_line="cyan")
     control.sleep()
     msg = "ACHOU REMOVENDO"
     new_intersections = []
     ret = False
-    bst.remove(s)
-    ns = bst.get_neighbours(s)
+    bst.remove(n_seg)
+    ns = bst.get_neighbours(n_seg)
     if(ns[0] is not None and ns[1] is not None):
         ret, pt1 = verify_n_intersection(ns[0], ns[1], msg)
         if (ret): new_intersections.append(pt1)
     return ret, new_intersections
 
-def treat_intersection (segs, bst):
+def treat_intersection (node_segs, bst, point):
     msg = "ACHOU OLHANDO INTERSECCAO"
     def define_pred(seg, ns):
         if ns[0] is not None:
@@ -132,18 +122,18 @@ def treat_intersection (segs, bst):
         return None
     new_intersections = []
     ret = ret1 = ret2 = False
-    seg1 = segs[0]
-    seg2 = segs[1]
+    seg1 = node_segs[0]
+    seg2 = node_segs[1]
     ns_1 = bst.get_neighbours(seg1)
     ns_2 = bst.get_neighbours(seg2)
     pred = define_pred(seg1, ns_1)
     suc = define_suc(seg2, ns_2)
     bst.remove(seg1)
     bst.remove(seg2)
-    seg1.mark = True
-    seg2.mark = True
-    bst.insert(seg2)
-    bst.insert(seg1)
+    s1n.key = Node ((point[0], point[1] + 0.0001))
+    s2n.key = Node ((point[0], point[1] - 0.0001))
+    bst.insert(s2n)
+    bst.insert(s1n)
     if pred is not None:
         pred.hilight(color_line="magenta")
         seg2.hilight(color_line="magenta")
@@ -167,7 +157,7 @@ def treat_intersection (segs, bst):
 
 class intersection_locator:
     def __init__(self, seg1, seg2):
-        self.coordinate = intersection(seg1, seg2)
+        self.coordinate = intersection(seg1.seg, seg2.seg)
         self.seg1 = seg1
         self.seg2 = seg2
 
@@ -177,8 +167,9 @@ def Scanline (segments):
     fix_segments(segments)
     list_of_intersections = []
     segments = sorted(segments, key=functools.cmp_to_key(compare_segments))
-    heap, hmap = make_event_points(segments)
-    bst = ABBB(Node_Seg)
+    segments_nodes = make_segment_nodes(segments)
+    heap, hmap = make_event_points(segments_nodes)
+    bst = ABBB(node_ctor=Node_Seg)
     for i in range (len(segments)):
         segments[i].plot()
     while (not heap.empty()):
@@ -202,7 +193,7 @@ def Scanline (segments):
                     list_of_intersections.append(inter)
         #Intersections on the point (no specific order)
         for segs in pt.intersections:
-            intersected, intersections = treat_intersection(segs, bst)
+            intersected, intersections = treat_intersection(segs, bst, pt.node.get_point())
             if(intersected):
                 for inter in intersections:
                     make_event(hmap, heap, [inter.seg1, inter.seg2], inter.coordinate, -1)
@@ -216,8 +207,8 @@ def print_aux2(list_intersections):
     for inter in list_intersections:
         print("\n\n============")
         print("point = ", inter.coordinate)
-        print("segment 1 = ", inter.seg1)
-        print("segment 2 = ", inter.seg2)
+        print("segment 1 = ", inter.seg1.seg)
+        print("segment 2 = ", inter.seg2.seg)
 
 def print_aux1(pt, segs):
     print(pt.node.x, pt.node.y)

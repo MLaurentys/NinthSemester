@@ -1,5 +1,5 @@
 from geocomp.lineintersections.segments_math import at_left
-
+from geocomp.lineintersections.rbtree import RBNode
 # Used Node in PE02
 
 # Regular Node Class that represents a point in 2D-space
@@ -16,6 +16,8 @@ class Node:
             return self.y < other.y
         else:
             return self.x < other.x
+        
+    def get_point (self): return (self.x, self.y)
 
 # Augmented 2D-point that carries information on its belonging
 class Node_Event:
@@ -23,16 +25,17 @@ class Node_Event:
         super().__init__()
         self.node = Node(pt)
         self.segments = []
-        self.left = []  #int ID
-        self.right = [] #int ID
-        self.intersections = set() #segs by value
+        # references to segment nodes
+        self.left = set()
+        self.right = set()
+        self.intersections = set()
 
     def add_to_segment(self, seg, identifier):
         self.segments.append((seg, identifier))
         if(identifier == 0):
-            self.left.append(seg)
+            self.left.add(seg)
         elif (identifier == 1):
-            self.right.append(seg)
+            self.right.add(seg)
         elif (identifier == -1):
             self.add_to_intersection(seg[0], seg[1])
         else:
@@ -63,9 +66,13 @@ class Node_Seg:
         self.seg = seg
         self.start = Node(seg.init)
         self.end = Node(seg.to)
+        self.key = self.start
 
     def get_val(self):
         return self.start, self.end, self.past_middle, self.seg
+
+    def change_key (self, point):
+        self.key = Node(point)
 
     def mark(self):
         self.mark = True
@@ -77,6 +84,14 @@ class Node_Seg:
         self.seg = seg
 
     def __lt__(self, other):
+        if (self.key.y < other.key.y):
+            return True
+        if other.key.y < self.key.y:
+            return False
+        if (self.key.x < other.key.x):
+            return True
+        return False
+
         s_comp_1 = self.start
         s_comp_2 = self.end
         o_comp_1 = other.start
@@ -95,12 +110,3 @@ class Node_Seg:
                 return False
             else:
                 return s_comp_2.y < o_comp_2.y
-
-    # def cheat_comparison(self, other):
-    #     if self.end.y < other.end.y:
-    #         return True
-    #     else:
-    #         if (other.end.y < self.end.y):
-    #             return False
-    #         else:
-    #             return self.start.y < other.start.y
