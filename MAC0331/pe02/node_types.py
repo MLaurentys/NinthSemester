@@ -47,9 +47,9 @@ class Node_Event:
         elif (at_left(seg2.init, seg2.to, seg1.init)):
             self.intersections.add((seg2,seg1))
         elif (at_left(seg1.init, seg1.to, seg2.to)):
-            self.intersections.add((seg1,seg2))
-        elif (at_left(seg2.init, seg2.to, seg1.to)):
             self.intersections.add((seg2,seg1))
+        elif (at_left(seg2.init, seg2.to, seg1.to)):
+            self.intersections.add((seg1,seg2))
         else:
             print("major problem")
 
@@ -60,7 +60,6 @@ class Node_Event:
 class Node_Seg:
     def __init__(self, seg):
         super().__init__()
-        self.past_middle = False
         self.left = None
         self.right = None
         self.seg = seg
@@ -69,44 +68,32 @@ class Node_Seg:
         self.key = self.start
 
     def get_val(self):
-        return self.start, self.end, self.past_middle, self.seg
+        return self.start, self.end, self.key, self.seg
 
     def change_key (self, point):
         self.key = Node(point)
 
-    def mark(self):
-        self.mark = True
-
-    def set_val(self, start, end, pm, seg):
+    def set_val(self, start, end, key, seg):
         self.start = start
         self.end = end
-        self.past_middle = pm
+        self.key = key
         self.seg = seg
 
     def __lt__(self, other):
+        # Is this.key ABOVE this.key?
+        # 
         if (self.key.y < other.key.y):
-            return True
-        if other.key.y < self.key.y:
             return False
+        if other.key.y < self.key.y:
+            return True
         if (self.key.x < other.key.x):
+            return False
+        if (other.key.x < self.key.x):
             return True
+        if (self.end.y < other.end.y):
+            return False
+        if other.end.y < self.end.y:
+            return True
+        if (self.end.x < other.end.x):
+            return False
         return False
-
-        s_comp_1 = self.start
-        s_comp_2 = self.end
-        o_comp_1 = other.start
-        o_comp_2 = other.end
-        if self.mark:
-            s_comp_1 = self.end
-            s_comp_2 = self.start
-        if other.mark:
-            o_comp_1 = other.end
-            o_comp_2 = other.start
-
-        if s_comp_1.y < o_comp_1.y:
-            return True
-        else:
-            if (o_comp_1.y < s_comp_1.y):
-                return False
-            else:
-                return s_comp_2.y < o_comp_2.y

@@ -57,16 +57,18 @@ class ABBB:
         else:
             if (cur_node.left is None):
                 ret = cur_node.right
-                cur_node = None
+                cur_node.left = None
+                cur_node.right = None
                 return ret
             elif (cur_node.right is None):
                 ret = cur_node.left
-                cur_node = None
+                cur_node.left = None
+                cur_node.right = None
                 return ret
             else:
                 n_node = self.get_min(cur_node.right)
-                st, en, pm, sg = n_node.get_val()
-                cur_node.set_val(st, en, pm, sg)
+                st, en, k, sg = n_node.get_val()
+                cur_node.set_val(st, en, k, sg)
                 cur_node.right = self._remove(cur_node.right, n_node)
                 n_node.left = None
                 n_node.right = None
