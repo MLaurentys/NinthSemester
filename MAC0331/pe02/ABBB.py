@@ -75,7 +75,7 @@ class ABBB:
 
     def remove(self, val):
         if (type(val) == Node_Seg):
-            self._root = self._remove(val)
+            self._root = self._remove(self._root, val)
         else:
             nd = self._Node(val)
             nd.change_key(nd.end.get_point())
@@ -105,34 +105,38 @@ class ABBB:
         if tree_node.right is not None:
             self._print_tree(tree_node.right)
 
-    def _get_neighbour(self, node):
-        def find_left(start, node):
-                ret = None
-                if(start != None):
-                    if (start < node):
-                        temp = find_left(start.right, node)
-                        ret = temp if (temp) else start
-                    else:
-                        ret = find_left(start.left, node)
-                return ret
-        def find_right(start, node):
-            ret = None
-            if(start != None):
-                if (node < start):
-                    temp = find_right(start.left, node)
-                    ret = temp if(temp) else start
-                else:
-                    ret = find_right(start.right, node)
-            return ret
-        
-        return find_left(self._root, node), find_right(self._root, node)
+    def _get_neighbour(self, start, node):
+        if start == None: return None, None
+        pred = succ = None
+        if start < node:
+            pred = start
+            a_pred, a_succ = self._get_neighbour(start.right, node)
+            if a_pred is not None and pred < a_pred: pred = a_pred
+            succ = a_succ
+        elif node < start:
+            succ = start
+            a_pred, a_succ = self._get_neighbour(start.right, node)
+            if a_succ is not None and a_succ < succ: succ = a_succ
+            pred = a_pred
+        else:
+            if start.left is not None:
+                t = start.left
+                while t.right is not None:
+                    t = t.right
+                pred = t
+            if start.right is not None:
+                t = start.right
+                while t.left is not None:
+                    t = t.left
+                succ = t
+        return pred, succ
 
     def get_neighbours(self, val):
         if type(val) == Node_Seg:
-            ns = self._get_neighbour(val)
+            ns = self._get_neighbour(self._root, val)
         else:
             nd = self._Node(val)
-            ns = self._get_neighbour(nd)
-        ns1 = ns[0]
-        ns2 = ns[1]
+            ns = self._get_neighbour(self._root, nd)
+        ns1 = ns[0].seg if ns[0] is not None else None
+        ns2 = ns[1].seg if ns[1] is not None else None
         return ns1, ns2
