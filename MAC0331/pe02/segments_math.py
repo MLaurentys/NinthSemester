@@ -4,6 +4,11 @@ from geocomp.common import segment
 ##
 ## Functions reponsible for calculating intersections
 ##
+def is_below(s1, s1_k, s2, s2_k):
+    if s1.has_left(s2_k):return True
+    if s2.has_left(s1_k):return False
+    if s1.value.has_left(s2.to): return True
+    return False
 
 def area2 (p1, p2, p3):
     return p1.x*p2.y - p1.y*p2.x + p1.y*p3.x \
