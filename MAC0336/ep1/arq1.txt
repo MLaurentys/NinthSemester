@@ -1,0 +1,44 @@
+April 30th., 2020
+
+Dear all,
+
+We are looking for a motivated student interested in pursuing a PhD on
+developing the foundations of a next generation of reliable networks:
+networks which are highly automated,  and verify and correct themselves
+autonomously, relying on algorithms and formal methods. Communication
+networks have become a critical infrastructure of our society and hence
+come with stringent requirements on dependability. We believe that
+automation can improve reliability: many network outages these days are due
+to human errors.
+
+The research position is at the Faculty of Computer Science at the
+University of Vienna and is fully funded. The candidate also has the
+opportunity to collaborate with Aalborg University, Denmark, and engage
+into longer visits, if she/he is interested: Aalborg University is a
+project partner.
+
+The candidate should have a strong background in algorithms in particular
+and theoretical computer science in general. Knowledge about. formal
+methods, model checking, and communication networks is a plus.
+
+We offer a productive research environment and excellent contacts to other
+universities as well as industry interested in this application domain.
+
+For an idea on the kind of research we are doing in this area, please see
+the sample publications attached below.
+
+To apply, please send your CV, motivation letter and reference letters to
+me by email.
+
+Please do not hesitate to contact me for any further information, And
+please do distribute this email to colleagues and students who may be
+interested.
+
+Thank you,
+
+Stefan Schmid (in collaboration with Kim G. Larsen and Jiri Srba at Aalborg
+University)
+schmiste@gmail.com
+
+PS: More information about our research group at:
+https://ct.cs.univie.ac.at/
