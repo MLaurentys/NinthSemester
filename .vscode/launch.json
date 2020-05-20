@@ -5,6 +5,27 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/MAC0331/vjudge/a.out",
+            "args": ["-std=g++17", "-g", "-O0", "<", "s"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/MAC0331/vjudge",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "My Build",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",

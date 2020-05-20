@@ -1,0 +1,26 @@
+{
+    "tasks": [
+        {
+            "label": "My Build",
+            "group": "build",
+            "type": "shell",
+            "options": {"cwd": "${workspaceRoot}/MAC0331/vjudge/"},
+            "command": "g++ -std=c++17 -O0 -g art_gallery.cpp"
+        },
+        {
+            "type": "shell",
+            "label": "gcc-8 build active file",
+            "command": "/usr/bin/gcc-8",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
