@@ -1,5 +1,4 @@
 from sage.all import *
-from generate_documents import generate_file
 
 import binascii
 import codecs
@@ -7,6 +6,20 @@ import sys
 import hashlib
 
 from os import urandom
+import os
+import codecs
+
+def generate_file(doc, initial_string, r_str):
+    file = doc
+    nusp = initial_string
+    if os.path.exists(file): os.remove(file)
+    os.mknod(file)
+    f = open(file, 'a')
+    f.write(nusp)
+    f.close()
+    f = open(file, 'ab')
+    f.write(r_str)
+    f.close()
 
 # 160-bit public keys ---> (512 - 160)bits of padding
 PUBLIC_PRIME_ALICE = 1041336674237055084071818376299951482429526594679
