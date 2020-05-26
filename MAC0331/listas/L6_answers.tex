@@ -25,5 +25,14 @@
 	\maketitle
 	\noindent
 	\textbf{Q 4:} \\
-	A Delaunay graph of a regular polygon
+	The Voronoy diagram of a regular polygon with $n$ vertices consists of a vertex $v$ in the circumcenter of the polygon and $n$ rays that start in $v$, cross the midpoint of each edge, on towards infinity. The Delaunay graph is equal to the original regular polygon.
+		\noindent
+	\textbf{Q 6:} \\
+	If $P$ consists of $n-1$ co-linear points, with adequate distance, and a point $v$ non co-linear, then the Delaunay diagram of $P$ is such that $d(v)=n-1$. \\
+	Proof by induction: \\
+	$\cdot$ Any two points in a line will be such that $d(v)=2$. This is simple if you consider that $v$ and $p_i$ will split a semi-plane in the Voronoi diagram.\\
+	$\cdot$ Consider a collection C of $k$ co-linear points such that the Voronoy diagram of $C + \{v\}$ is such that $d(v) = k$.
+	$\cdot$ Take $u$ the most distant point in $C$ to $v$ and $z$ any other point. We can add $w$, more distant to $v$ than $u$ in the direction $\overrightarrow{zu}$ in a way that we keep the initial property.
+	
+	
 \end{document}
