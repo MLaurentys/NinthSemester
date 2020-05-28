@@ -9,29 +9,24 @@ struct point;
 struct segment;
 struct event;
 
-using p_pt = std::shared_ptr<point>;
-using p_seg = std::shared_ptr<segment>;
-using p_eve = std::shared_ptr<event>;
-
 struct point {
     float x;
     float y;
     point (float xi, float yi) {x = xi; y = yi;}
     inline void cp (point&other) {x = other.x; y = other.y;}
 };
-bool cmpX (const point& t, const point& other) {return t.x < other.x;}
-bool cmpY (const point& t, const point& other) {return t.y < other.y;}
-bool cmpXY  (const point& t, const point& other) {
-    float xdiff = t.x - other.x;
-    if (xdiff == 0.0) {
+inline bool cmpX (const point& t, const point& other) {return t.x < other.x;}
+inline bool cmpY (const point& t, const point& other) {return t.y < other.y;}
+inline bool cmpXY  (const point& t, const point& other) {
+    if (t.x == other.x) {
         return t.y < other.y;
     }
-    return xdiff < 0.0;
-}   
-float area_tri (const point &a, point &b, const point &c) {
+    return t.x < other.x;
+}
+inline float area_tri (const point &a, const point &b, const point &c) {
     return (b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x);
 }
-bool at_left (point &p1, point &p2, point &p3){
+bool at_left (const point &p1, const point &p2, const point &p3){
     return area_tri(p1, p2, p3) > 0.0f;
 }
 
@@ -47,13 +42,39 @@ bool on_segment (const segment &seg, const point &p) {
     if (!(area_tri(*seg.s, *seg.e, p) == 0.0f)) return false;
     auto *s = seg.s;
     auto *e = seg.e;
-    if (s->x != e->x)
-        return s->x <= p.x && p.x <= e->x;
-    return s->y <= p.y && p.y <= e->y;
+    if (s->x != e->x) {
+        return s->x < p.x && p.x < e->x;
+    }
+    return s->y < p.y && p.y < e->y;
+}
+struct cmpS{
+    bool operator() (const segment *s1, const segment *s2) const {
+        //same segment
+        if ((s1->s == s2->s) && (s1->e == s2->e)) return false;
+        //collinear segments Sx -> Sy -> Ex|y -> Ex|y
+        if (area_tri(*s1->s, *s1->e, *s2->s) == 0.0f &&
+              area_tri(*s1->s, *s1->e, *s2->e) == 0.0f) {
+            return cmpXY(*s1->s, *s2->s);
+        }
+        if (s1->s == s2->s) {
+            return !at_left(*s2->s, *s2->e, *s1->e);
+        }
+        // starting points in a vertcal line
+        if (s1->s->x == s2->s->x) return s1->s->y < s2->s->y;
+        if (cmpXY(*s1->s, *s2->s)) // s1->s < s2->s (seg s1 inserted 1st)
+            return at_left(*s1->s, *s1->e, *s2->s);
+        return !at_left(*s2->s, *s2->e, *s1->s);
+    }
+};
+bool intersect_colinear(const segment& s1, const segment& s2) {
+    bool a = (on_segment(s1, *s2.s));
+    bool b = (on_segment(s1, *s2.e));
+    bool c = (on_segment(s2, *s1.s));
+    bool d = (on_segment(s2, *s1.e));
+    return  a || b || c || d;
 }
 bool intersect(const segment& s1, const segment& s2) {
-    if (on_segment(s1, *s2.s) || on_segment(s1, *s2.e) ||
-        on_segment(s2, *s1.s) || on_segment(s2, *s1.e))
+    if (intersect_colinear(s1,s2))
         return true;
     bool a = at_left(*s1.s, *s1.e, *s2.s);
     bool b = at_left(*s1.s, *s1.e, *s2.e);
@@ -71,16 +92,8 @@ struct event {
         seg = &s; type = tp; p = &pt;
     }
 };
-bool eveCmp (const event& e1, const event& e2) {return cmpXY(*e1.p, *e2.p);}
+inline bool eveCmp (const event& e1, const event& e2) {return cmpXY(*e1.p, *e2.p);}
 
-void pr_seg(segment &seg){
-    std::cout << seg.s->x << " " << seg.s->y << std::endl;
-    std::cout << seg.e->x << " " << seg.e->y << std::endl;
-}
-void pr_eve(event &e){
-    std::cout << e.seg->s->x << " " << e.seg->s->y << std::endl;
-    std::cout << e.seg->e->x << " " << e.seg->e->y << std::endl;
-}
 void pre_process (int size, std::vector<point>& pts, std::vector<event>& evts,
         std::vector<segment>& segs) {
     pts.reserve(size);
@@ -99,66 +112,56 @@ void pre_process (int size, std::vector<point>& pts, std::vector<event>& evts,
             segs.push_back({pts[j], pts[i], i});
         evts.push_back({segs[i], *segs[i].s, 0});
         evts.push_back({segs[i], *segs[i].e, 1});
-        std::cout << 2*i << "\n";
-        std::cout << segs[i].s << "\n";
-        std::cout << evts[2*i].seg->s << "\n";
-    }
-    for (int i = 0; i < size; ++i) {
-        std::cout << 2*i << "\n";
-        std::cout << segs[i].s << "\n";
-        std::cout << evts[2*i].seg->s << "\n";
-    }
-    int i = 0;
-    for (event &e : evts){
-        std::cout << i++ << "\n";
-        pr_eve(e);
     }
     std::sort (evts.begin(), evts.end(), eveCmp);
-    i = 0;
-    for (event &e : evts){
-        std::cout << i++ << "\n";
-        std::cout << e.seg->s->x << e.seg->s->y << std::endl;
-    }
 }
 
-bool not_seq (std::set<segment*>::iterator it1, std::set<segment*>::iterator it2,
-              int sz) {
+bool seq_handler (std::set<segment*>::iterator it1,
+        std::set<segment*>::iterator it2, int sz) {
     int dif = abs((*it1)->ind - (*it2)->ind);
-    return dif > 1 && dif != sz - 1;
+    if (dif > 1 && dif != sz - 1) return true;
+    return intersect_colinear(*(*it1), *(*it2));
 }
 
 
 
 int main() {
+    std::ios_base::sync_with_stdio(false); 
+    std::cin.tie(NULL); 
+    std::cout.tie(NULL);
     std::vector<point> points;
     std::vector<segment> segments;
     std::vector<event> events;
-    std::set<segment*> tree;
+    std::set<segment*,cmpS> tree;
     event *e;
     int n;
     bool flag;
     for (std::cin >> n; n != 0; std::cin >> n) {
         flag = false;
+        if (n == 2) flag = true;
         pre_process(n, points, events, segments);
         for (int i = 0; i < (int)events.size(); ++i) {
             e = &events[i];
             if (e->type == 0) {
+                if (tree.find(e->seg) != tree.end()) {
+                    flag = true;
+                    break;
+                }
                 auto p = std::get<0>(tree.insert(e->seg));
-                auto pr = std::prev(p);
                 auto nx = std::next(p);
                 if (p != tree.begin() &&
-                    not_seq(pr, p, n) &&
-                    intersect(*(*pr), *(*p)))
+                    seq_handler(std::prev(p), p, n) &&
+                    intersect(*(*std::prev(p)), *(*p)))
                     flag = true;
                 if (nx != tree.end() &&
-                    not_seq(p, nx, n) &&
+                    seq_handler(p, nx, n) &&
                     intersect(*(*nx), *(*p)))
                     flag = true;
             }
             else {
                 auto p = tree.find(e->seg);
                 if (p != tree.begin() && (next(p) != tree.end()) &&
-                    not_seq(prev(p), next(p), n) &&
+                    seq_handler(prev(p), next(p), n) &&
                     intersect(*(*next(p)), *(*prev(p))))
                     flag = true;
                 tree.erase(p);
