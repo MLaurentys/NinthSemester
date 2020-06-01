@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/usr/bin/sage",
+    "python.pythonPath": "/usr/bin/python3",
     "files.associations": {
         "iostream": "cpp",
         "limits": "cpp",
@@ -45,6 +45,7 @@
         "random": "cpp",
         "string": "cpp",
         "ctime": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "set": "cpp"
     }
 }

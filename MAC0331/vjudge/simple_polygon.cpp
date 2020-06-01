@@ -5,14 +5,16 @@
 #include <set>
 #include <cmath>
 
+const double EPS = 1E-9;
+
 struct point;
 struct segment;
 struct event;
 
 struct point {
-    float x;
-    float y;
-    point (float xi, float yi) {x = xi; y = yi;}
+    double x;
+    double y;
+    point (double xi, double yi) {x = xi; y = yi;}
     inline void cp (point&other) {x = other.x; y = other.y;}
 };
 inline bool cmpX (const point& t, const point& other) {return t.x < other.x;}
@@ -23,7 +25,7 @@ inline bool cmpXY  (const point& t, const point& other) {
     }
     return t.x < other.x;
 }
-inline float area_tri (const point &a, const point &b, const point &c) {
+inline double area_tri (const point &a, const point &b, const point &c) {
     return (b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x);
 }
 bool at_left (const point &p1, const point &p2, const point &p3){
@@ -37,6 +39,10 @@ struct segment {
     segment (point &pt1, point&pt2, int i) {
         s = &pt1; e = &pt2; ind = i;
     }
+    double get_y (double x) const {
+        if ((s->x - e->x) < EPS) return s->y;
+        return s->y + (e->y - s->y) * (x - s->x) / (e->x - s->x);
+    }
 };
 bool on_segment (const segment &seg, const point &p) {
     if (!(area_tri(*seg.s, *seg.e, p) == 0.0f)) return false;
@@ -49,21 +55,12 @@ bool on_segment (const segment &seg, const point &p) {
 }
 struct cmpS{
     bool operator() (const segment *s1, const segment *s2) const {
-        //same segment
-        if ((s1->s == s2->s) && (s1->e == s2->e)) return false;
-        //collinear segments Sx -> Sy -> Ex|y -> Ex|y
-        if (area_tri(*s1->s, *s1->e, *s2->s) == 0.0f &&
-              area_tri(*s1->s, *s1->e, *s2->e) == 0.0f) {
-            return cmpXY(*s1->s, *s2->s);
-        }
-        if (s1->s == s2->s) {
-            return !at_left(*s2->s, *s2->e, *s1->e);
-        }
-        // starting points in a vertcal line
-        if (s1->s->x == s2->s->x) return s1->s->y < s2->s->y;
-        if (cmpXY(*s1->s, *s2->s)) // s1->s < s2->s (seg s1 inserted 1st)
-            return at_left(*s1->s, *s1->e, *s2->s);
-        return !at_left(*s2->s, *s2->e, *s1->s);
+        // x of the start of the last added segment
+        double sx = std::max(s1->s->x, s2->s->x);
+        double y1 = s1->get_y(sx);
+        double y2 = s2->get_y(sx);
+        if (std::abs(y1 - y2) < EPS) return s1->ind < s2->ind;
+        return y1 < y2;
     }
 };
 bool intersect_colinear(const segment& s1, const segment& s2) {
@@ -99,7 +96,7 @@ void pre_process (int size, std::vector<point>& pts, std::vector<event>& evts,
     pts.reserve(size);
     evts.reserve(size);
     segs.reserve(size);
-    float x, y;
+    double x, y;
     for (int i = 0; i < size; ++ i) {
         std::cin >> x >> y;
         pts.push_back({x,y});

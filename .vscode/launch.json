@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/MAC0331/vjudge/a.out",
-            "args": ["-std=g++17", "-g", "-O0", "<", "s"],
+            "args": ["-std=g++17", "-g", "-O0", "<", "t"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/MAC0331/vjudge",
             "environment": [],

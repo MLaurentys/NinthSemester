@@ -5,7 +5,7 @@
             "group": "build",
             "type": "shell",
             "options": {"cwd": "${workspaceRoot}/MAC0331/vjudge/"},
-            "command": "g++ -std=c++17 -O0 -g simple_polygon.cpp"
+            "command": "g++ -std=c++11 -O0 -g simple_polygon.cpp"
         },
         {
             "type": "shell",
