@@ -5,7 +5,7 @@ class MDPAlgorithm:
     # Set:
     # - self.pi: optimal policy (mapping from state to action)
     # - self.V: values (mapping from state to best values)
-    def solve(self, mdp): raise NotImplementedError("Override me")
+    def solve(self, mdp, epsilon=0.001): raise NotImplementedError("Override me")
 
 ############################################################
 
@@ -51,9 +51,6 @@ class MDP:
                     if newState not in self.states:
                         self.states.add(newState)
                         queue.append(newState)
-        # print(self.states)
-
-
 
 class NumberLineMDP(MDP):
     """

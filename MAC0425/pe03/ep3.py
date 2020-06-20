@@ -13,8 +13,8 @@
   ENTENDO QUE EPS SEM ASSINATURA NAO SERAO CORRIGIDOS E,
   AINDA ASSIM, PODERAO SER PUNIDOS POR DESONESTIDADE ACADEMICA.
 
-  Nome :
-  NUSP :
+  Nome : Matheus Tararam de Laurentys
+  NUSP : 9793714
 
   Referencias: Com excecao das rotinas fornecidas no enunciado
   e em sala de aula, caso voce tenha utilizado alguma referencia,
@@ -73,7 +73,11 @@ class BlackjackMDP(util.MDP):
         Return set of actions possible from |state|.
         You do not must to modify this function.
         """
-        return ['Pegar', 'Espiar', 'Sair']
+        if state[2] is None:
+            return ['Sair']
+        if state[1] is None:
+            return ['Pegar', 'Espiar', 'Sair']
+        return ['Pegar', 'Sair']
 
     def succAndProbReward(self, state, action):
         """
@@ -87,7 +91,39 @@ class BlackjackMDP(util.MDP):
            don't include that state in the list returned by succAndProbReward.
         """
         # BEGIN_YOUR_CODE
-        raise Exception("Not implemented yet")
+        def make_draw_state(prev_state, index, espiou=False):
+            sumc = sum(prev_state[2])
+            new_sum = prev_state[0] + self.valores_cartas[index]
+            if espiou:
+                prob = 1
+            else:
+                prob = state[2][index]/sumc
+            if new_sum > self.limiar:
+                return ((new_sum, None, None), prob, 0)
+            if sumc == 1:
+                return ((new_sum, None, None), 1, new_sum)
+            cards = list(state[2])
+            cards[index] -= 1
+            new_st = (new_sum, None, tuple(cards))
+            return (new_st, prob, prev_state[0])
+
+        reachable = []
+        if action == 'Pegar':
+            if state[1] is None:
+                for i in range(len(state[2])):
+                    if state[2][i]:
+                        reachable.append(make_draw_state(state, i))
+            else:
+                reachable.append(make_draw_state(state, state[1], True))
+        elif action == "Espiar":
+            for i in range(len(state[2])):
+                if state[2][i]:
+                    new_st = (state[0], i, state[2])
+                    reachable.append((new_st, state[2][i]/sum(state[2],\
+                                      state[0] - self.custo_espiada)))
+        elif action == 'Sair':
+            reachable.append(((state[0], None, None), 1, state[0]))
+        return reachable
         # END_YOUR_CODE
 
     def discount(self):
@@ -103,41 +139,53 @@ class BlackjackMDP(util.MDP):
 class ValueIteration(util.MDPAlgorithm):
     """ Asynchronous Value iteration algorithm """
     def __init__(self):
-        self.pi = {}
-        self.V = {}
+        self.state_to_action = {}
+        self.state_to_value = {}
 
     def solve(self, mdp, epsilon=0.001):
         """
         Solve the MDP using value iteration.  Your solve() method must set
-        - self.V to the dictionary mapping states to optimal values
-        - self.pi to the dictionary mapping states to an optimal action
+        - self.state_to_value to the dictionary mapping states to optimal values
+        - self.state_to_action to the dictionary mapping states to an optimal action
         Note: epsilon is the error tolerance: you should stop value iteration when
         all of the values change by less than epsilon.
         The ValueIteration class is a subclass of util.MDPAlgorithm (see util.py).
         """
-        mdp.computeStates()
-        def computeQ(mdp, V, state, action):
-            # Return Q(state, action) based on V(state).
-            return sum(prob * (reward + mdp.discount() * V[newState]) \
-                            for newState, prob, reward in mdp.succAndProbReward(state, action))
+        def computeQ(mdp, st_val, state, action):
+            # Return Q(state, action) based on st_val(state).
+            return sum(prob * (reward + mdp.discount() * st_val[newState]) \
+                        for newState, prob, reward in\
+                            mdp.succAndProbReward(state, action))
 
-        def computeOptimalPolicy(mdp, V):
-            # Return the optimal policy given the values V.
-            pi = {}
+        def compute_optimal_policy(mdp, st_val):
+            # Return the optimal policy given the values st_val.
+            st_act = {}
             for state in mdp.states:
-                pi[state] = max((computeQ(mdp, V, state, action), action) for action in mdp.actions(state))[1]
-            return pi
-        V = defaultdict(float)  # state -> value of state
+                st_act[state] = max((computeQ(mdp, st_val, state, action), action)\
+                    for action in mdp.actions(state))[1]
+            return st_act
+
+        st_val = defaultdict(float)  # state -> value of state
+
         # Implement the main loop of Asynchronous Value Iteration Here:
         # BEGIN_YOUR_CODE
-        raise Exception("Not implemented yet")
+        mdp.computeStates()
+        next_val = {}; prev_val = {}
+        # starting next_val: any number larger than epsilon/len(mdp.states)
+        for st in mdp.states: next_val[st] = 0; prev_val[st] = -1
+        while sum(next_val.values()) - sum(prev_val.values()) > epsilon:
+            for st in mdp.states: prev_val[st] = next_val[st]
+            for st in mdp.states:
+                next_val[st] = max(mdp.actios(st),\
+                    key=lambda act: computeQ(mdp, prev_val, st, act))
+
         # END_YOUR_CODE
 
         # Extract the optimal policy now
-        pi = computeOptimalPolicy(mdp, V)
+        st_act = compute_optimal_policy(mdp, st_val)
         # print("ValueIteration: %d iterations" % numIters)
-        self.pi = pi
-        self.V = V
+        self.state_to_action = st_act
+        self.state_to_value = st_val
 
 # First MDP
 MDP1 = BlackjackMDP(valores_cartas=[1, 5], multiplicidade=2, limiar=10, custo_espiada=1)
@@ -224,7 +272,8 @@ def identityFeatureExtractor(state, action):
     return [(featureKey, featureValue)]
 
 # Large test case
-largeMDP = BlackjackMDP(valores_cartas=[1, 3, 5, 8, 10], multiplicidade=3, limiar=40, custo_espiada=1)
+largeMDP = BlackjackMDP(valores_cartas=[1, 3, 5, 8, 10], multiplicidade=3,\
+    limiar=40, custo_espiada=1)
 
 # **********************************************************
 # **        PART 03-01 Features for Q-Learning             **
@@ -238,3 +287,24 @@ def blackjackFeatureExtractor(state, action):
     # BEGIN_YOUR_CODE
     raise Exception("Not implemented yet")
     # END_YOUR_CODE
+
+# smallMDP = BlackjackMDP(valores_cartas=[1, 5], multiplicidade=2,
+#                                        limiar=15, custo_espiada=1)
+# preEmptyState = (11, None, (1,0))
+# # Make sure the succAndProbReward function is implemented correctly.
+# tests = [
+#     ([((12, None, None), 1, 12)], smallMDP, preEmptyState, 'Pegar'),
+#     ([((5, None, (2, 1)), 1, 0)], smallMDP, (0, 1, (2, 2)), 'Pegar')
+# ]
+# total_tests_global = 0
+# total_tests = 0
+# results = 0
+# for gold, mdp, state, action in tests:
+#     total_tests_global += 1
+#     total_tests += 1
+#     res = mdp.succAndProbReward(state, action)
+#     print(gold)
+#     print(res)
+#     if  gold==res:
+#         results += 1
+# print(results)

@@ -1,0 +1,537 @@
+******************************
+Code quality:
+------------------------------
+Code grade: 7.28/10.0	(Great code quality)
+------------------------------
+Standards deviation:
+statement:	0
+info:	0
+convention:	22
+refactor:	1
+warning:	2
+error:	0
+fatal:	0
+------------------------------
+Deviation description:
+invalid-name:	22
+arguments-differ:	1
+unreachable:	1
+too-few-public-methods:	1
+******************************
+Tests:
+------------------------------
+Parte01-01 Modeling MDPs:
+Modeling MDPs:	0/2 correct
+Test concluded without errors
+Grade in the Test01: 0.0/10.0
+------------------------------
+Part02-01 ValueIteration::
+Python error: not enough values to unpack (expected 3, got 2)
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-01: 0.0/10.0
+------------------------------
+Part02-02 Peeking MDP:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-02: 0.0/10.0
+------------------------------
+Part03-01 QLearningAlgorithm:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test03-01: 0.0/10.0
+******************************
+Code quality:
+------------------------------
+Code grade: 5.27/10.0	(Code with reasonably quality)
+------------------------------
+Standards deviation:
+statement:	0
+info:	0
+convention:	32
+refactor:	1
+warning:	20
+error:	0
+fatal:	0
+------------------------------
+Deviation description:
+bad-continuation:	1
+bad-whitespace:	2
+missing-final-newline:	1
+redefined-outer-name:	18
+invalid-name:	28
+arguments-differ:	1
+unreachable:	1
+too-few-public-methods:	1
+******************************
+Tests:
+------------------------------
+Parte01-01 Modeling MDPs:
+Modeling MDPs:	2/2 correct
+Test concluded without errors
+Grade in the Test01: 10.0/10.0
+------------------------------
+Part02-01 ValueIteration::
+Python error: not enough values to unpack (expected 3, got 2)
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-01: 0.0/10.0
+------------------------------
+Part02-02 Peeking MDP:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-02: 0.0/10.0
+------------------------------
+Part03-01 QLearningAlgorithm:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test03-01: 0.0/10.0
+******************************
+Code quality:
+------------------------------
+Code grade: 7.32/10.0	(Great code quality)
+------------------------------
+Standards deviation:
+statement:	0
+info:	0
+convention:	23
+refactor:	1
+warning:	2
+error:	0
+fatal:	0
+------------------------------
+Deviation description:
+missing-final-newline:	1
+invalid-name:	22
+arguments-differ:	1
+unreachable:	1
+too-few-public-methods:	1
+******************************
+Tests:
+------------------------------
+Parte01-01 Modeling MDPs:
+Modeling MDPs:	2/2 correct
+Test concluded without errors
+Grade in the Test01: 10.0/10.0
+------------------------------
+Part02-01 ValueIteration::
+Python error: not enough values to unpack (expected 3, got 2)
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-01: 0.0/10.0
+------------------------------
+Part02-02 Peeking MDP:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-02: 0.0/10.0
+------------------------------
+Part03-01 QLearningAlgorithm:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test03-01: 0.0/10.0
+******************************
+Code quality:
+------------------------------
+Code grade: 7.32/10.0	(Great code quality)
+------------------------------
+Standards deviation:
+statement:	0
+info:	0
+convention:	23
+refactor:	1
+warning:	2
+error:	0
+fatal:	0
+------------------------------
+Deviation description:
+missing-final-newline:	1
+invalid-name:	22
+arguments-differ:	1
+unreachable:	1
+too-few-public-methods:	1
+******************************
+Tests:
+------------------------------
+Parte01-01 Modeling MDPs:
+Modeling MDPs:	2/2 correct
+Test concluded without errors
+Grade in the Test01: 10.0/10.0
+------------------------------
+Part02-01 ValueIteration::
+Python error: not enough values to unpack (expected 3, got 2)
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-01: 0.0/10.0
+------------------------------
+Part02-02 Peeking MDP:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-02: 0.0/10.0
+------------------------------
+Part03-01 QLearningAlgorithm:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test03-01: 0.0/10.0
+******************************
+Code quality:
+------------------------------
+Code grade: 7.42/10.0	(Great code quality)
+------------------------------
+Standards deviation:
+statement:	0
+info:	0
+convention:	23
+refactor:	1
+warning:	1
+error:	0
+fatal:	0
+------------------------------
+Deviation description:
+missing-final-newline:	1
+invalid-name:	22
+unreachable:	1
+too-few-public-methods:	1
+******************************
+Tests:
+------------------------------
+Parte01-01 Modeling MDPs:
+Modeling MDPs:	2/2 correct
+Test concluded without errors
+Grade in the Test01: 10.0/10.0
+------------------------------
+Part02-01 ValueIteration::
+Python error: not enough values to unpack (expected 3, got 2)
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-01: 0.0/10.0
+------------------------------
+Part02-02 Peeking MDP:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-02: 0.0/10.0
+------------------------------
+Part03-01 QLearningAlgorithm:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test03-01: 0.0/10.0
+******************************
+Code quality:
+------------------------------
+Code grade: 7.63/10.0	(Great code quality)
+------------------------------
+Standards deviation:
+statement:	0
+info:	0
+convention:	21
+refactor:	1
+warning:	1
+error:	0
+fatal:	0
+------------------------------
+Deviation description:
+missing-final-newline:	1
+invalid-name:	20
+unreachable:	1
+too-few-public-methods:	1
+******************************
+Tests:
+------------------------------
+Parte01-01 Modeling MDPs:
+Modeling MDPs:	2/2 correct
+Test concluded without errors
+Grade in the Test01: 10.0/10.0
+------------------------------
+Part02-01 ValueIteration::
+Python error: not enough values to unpack (expected 3, got 2)
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-01: 0.0/10.0
+------------------------------
+Part02-02 Peeking MDP:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-02: 0.0/10.0
+------------------------------
+Part03-01 QLearningAlgorithm:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test03-01: 0.0/10.0
+******************************
+Code quality:
+------------------------------
+Code grade: 8.14/10.0	(Great code quality)
+------------------------------
+Standards deviation:
+statement:	0
+info:	0
+convention:	16
+refactor:	1
+warning:	1
+error:	0
+fatal:	0
+------------------------------
+Deviation description:
+missing-final-newline:	1
+invalid-name:	15
+unreachable:	1
+too-few-public-methods:	1
+******************************
+Tests:
+------------------------------
+Parte01-01 Modeling MDPs:
+Modeling MDPs:	2/2 correct
+Test concluded without errors
+Grade in the Test01: 10.0/10.0
+------------------------------
+Part02-01 ValueIteration::
+Python error: not enough values to unpack (expected 3, got 2)
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-01: 0.0/10.0
+------------------------------
+Part02-02 Peeking MDP:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-02: 0.0/10.0
+------------------------------
+Part03-01 QLearningAlgorithm:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test03-01: 0.0/10.0
+******************************
+Code quality:
+------------------------------
+Code grade: 8.35/10.0	(Great code quality)
+------------------------------
+Standards deviation:
+statement:	0
+info:	0
+convention:	14
+refactor:	1
+warning:	1
+error:	0
+fatal:	0
+------------------------------
+Deviation description:
+invalid-name:	14
+unreachable:	1
+too-few-public-methods:	1
+******************************
+Tests:
+------------------------------
+Parte01-01 Modeling MDPs:
+Modeling MDPs:	2/2 correct
+Test concluded without errors
+Grade in the Test01: 10.0/10.0
+------------------------------
+Part02-01 ValueIteration::
+Python error: not enough values to unpack (expected 3, got 2)
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-01: 0.0/10.0
+------------------------------
+Part02-02 Peeking MDP:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-02: 0.0/10.0
+------------------------------
+Part03-01 QLearningAlgorithm:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test03-01: 0.0/10.0
+******************************
+Code quality:
+------------------------------
+Code grade: 8.00/10.0	(Great code quality)
+------------------------------
+Standards deviation:
+statement:	0
+info:	0
+convention:	20
+refactor:	2
+warning:	0
+error:	0
+fatal:	0
+------------------------------
+Deviation description:
+no-else-return:	1
+invalid-name:	17
+multiple-statements:	3
+too-few-public-methods:	1
+******************************
+Tests:
+------------------------------
+Parte01-01 Modeling MDPs:
+Modeling MDPs:	2/2 correct
+Test concluded without errors
+Grade in the Test01: 10.0/10.0
+------------------------------
+Part02-01 ValueIteration::
+Python error: not enough values to unpack (expected 3, got 2)
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-01: 0.0/10.0
+------------------------------
+Part02-02 Peeking MDP:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-02: 0.0/10.0
+------------------------------
+Part03-01 QLearningAlgorithm:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test03-01: 0.0/10.0
+******************************
+Code quality:
+------------------------------
+Code grade: 6.08/10.0	(Code with reasonably quality)
+------------------------------
+Standards deviation:
+statement:	0
+info:	0
+convention:	29
+refactor:	2
+warning:	18
+error:	0
+fatal:	0
+------------------------------
+Deviation description:
+bad-continuation:	1
+bad-whitespace:	2
+redefined-outer-name:	18
+no-else-return:	1
+invalid-name:	23
+multiple-statements:	3
+too-few-public-methods:	1
+******************************
+Tests:
+------------------------------
+Parte01-01 Modeling MDPs:
+Modeling MDPs:	2/2 correct
+Test concluded without errors
+Grade in the Test01: 10.0/10.0
+------------------------------
+Part02-01 ValueIteration::
+Python error: not enough values to unpack (expected 3, got 2)
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-01: 0.0/10.0
+------------------------------
+Part02-02 Peeking MDP:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-02: 0.0/10.0
+------------------------------
+Part03-01 QLearningAlgorithm:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test03-01: 0.0/10.0
+******************************
+Code quality:
+------------------------------
+Code grade: 6.03/10.0	(Code with reasonably quality)
+------------------------------
+Standards deviation:
+statement:	0
+info:	0
+convention:	29
+refactor:	1
+warning:	18
+error:	0
+fatal:	0
+------------------------------
+Deviation description:
+bad-continuation:	1
+bad-whitespace:	2
+redefined-outer-name:	18
+invalid-name:	23
+multiple-statements:	3
+too-few-public-methods:	1
+******************************
+Tests:
+------------------------------
+Parte01-01 Modeling MDPs:
+Modeling MDPs:	2/2 correct
+Test concluded without errors
+Grade in the Test01: 10.0/10.0
+------------------------------
+Part02-01 ValueIteration::
+Python error: not enough values to unpack (expected 3, got 2)
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-01: 0.0/10.0
+------------------------------
+Part02-02 Peeking MDP:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-02: 0.0/10.0
+------------------------------
+Part03-01 QLearningAlgorithm:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test03-01: 0.0/10.0
+******************************
+Code quality:
+------------------------------
+Code grade: 8.09/10.0	(Great code quality)
+------------------------------
+Standards deviation:
+statement:	0
+info:	0
+convention:	20
+refactor:	1
+warning:	0
+error:	0
+fatal:	0
+------------------------------
+Deviation description:
+invalid-name:	17
+multiple-statements:	3
+too-few-public-methods:	1
+******************************
+Tests:
+------------------------------
+Parte01-01 Modeling MDPs:
+Modeling MDPs:	2/2 correct
+Test concluded without errors
+Grade in the Test01: 10.0/10.0
+------------------------------
+Part02-01 ValueIteration::
+Python error: not enough values to unpack (expected 3, got 2)
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-01: 0.0/10.0
+------------------------------
+Part02-02 Peeking MDP:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test02-02: 0.0/10.0
+------------------------------
+Part03-01 QLearningAlgorithm:
+Python error: Not implemented yet
+Test did not conclude
+Receiving grade 0.0 in the test
+Grade in the Test03-01: 0.0/10.0
