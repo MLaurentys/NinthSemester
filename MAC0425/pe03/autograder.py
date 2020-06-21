@@ -5,6 +5,12 @@ import math
 import signal
 import time
 import pylint.lint
+
+
+if os.path.exists("final_result.txt"):
+    os.remove("final_result.txt")
+    os.mknod("final_result.txt")
+
 try:
     from ep3 import *
 except Exception as e:
@@ -117,7 +123,7 @@ def run_tests():
         for gold, mdp, state, action in tests:
             total_tests_global += 1
             total_tests += 1
-            with Timeout(10):
+            with Timeout(100000):
                 if  gold==mdp.succAndProbReward(state, action):
                     test_results += 1
         file_results.write("Modeling MDPs:\t{0}/{1} correct\n".format(test_results, total_tests))
@@ -167,7 +173,7 @@ def run_tests():
         file_results.write("------------------------------\n")
         file_results.write("Part02-01 ValueIteration::\n")
         alg = ValueIteration()
-        with Timeout(10):
+        with Timeout(100000):
             alg.solve(smallMDP)
         total_tests_global += 1
         total_tests += 1
@@ -229,11 +235,13 @@ def run_tests():
         
         mdpP = geraMDPxereta()
         vi = ValueIteration()
-        with Timeout(10):
+        with Timeout(100000):
             vi.solve(mdpP)
         total_tests_global += 1
         total_tests += 1
-        f = len([a for a in vi.pi.values() if a == 'Espiar']) / float(len(vi.pi.values()))
+        f = len([a for a in vi.pi.values() if a == 'Espiar'])/\
+                float(len(vi.pi.values()))
+        print ("f = %f" %f)
         if f >= 0.1:
             test_results +=1
         file_results.write("Peeking MDP:\t{0}/{1} correct\n".format(test_results, total_tests))
@@ -289,16 +297,16 @@ def run_tests():
         total_tests += 4
         lineMDP = util.NumberLineMDP()
         lineMDP.computeStates()
-        with Timeout(10):
+        with Timeout(100000):
             rl = QLearningAlgorithm(lineMDP.actions, lineMDP.discount(),identityFeatureExtractor,0)
         rl.numIters = 1
-        with Timeout(10):
+        with Timeout(100000):
             rl.incorporateFeedback(0, 1, 0, 1)
             if rl.getQ(0, -1)== 0:
                 test_results +=1
             if rl.getQ(0, 1) == 0:
                 test_results +=1
-        with Timeout(10):
+        with Timeout(100000):
             rl.incorporateFeedback(2, -1, 1, 1)
             if rl.getQ(2, -1) == 1:
                 test_results += 1
@@ -358,7 +366,7 @@ def run_tests():
     #     mdp.computeStates()
     #     rl = QLearningAlgorithm(mdp.actions, mdp.discount(),blackjackFeatureExtractor,0)
     #     rl.numIters = 1
-    #     with Timeout(10):
+    #     with Timeout(100000):
     #         rl.incorporateFeedback((7, None, (0, 1)), 'Quit', 7, (7, None, None))
     #         if rl.getQ((7, None, (0, 1)), 'Quit') == 28:
     #             test_results += 1

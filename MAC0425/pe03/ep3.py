@@ -99,15 +99,16 @@ class BlackjackMDP(util.MDP):
             else:
                 prob = state[2][index]/sumc
             if new_sum > self.limiar:
-                return ((new_sum, None, None), prob, 0)
+                return ((0, None, None), prob, 0)
             if sumc == 1:
                 return ((new_sum, None, None), 1, new_sum)
             cards = list(state[2])
             cards[index] -= 1
             new_st = (new_sum, None, tuple(cards))
-            return (new_st, prob, prev_state[0])
+            return (new_st, prob, 0)
 
         reachable = []
+        if state[2] == None: return []
         if action == 'Pegar':
             if state[1] is None:
                 for i in range(len(state[2])):
@@ -115,14 +116,17 @@ class BlackjackMDP(util.MDP):
                         reachable.append(make_draw_state(state, i))
             else:
                 reachable.append(make_draw_state(state, state[1], True))
-        elif action == "Espiar":
+        elif action == 'Espiar':
+            if state[1] is not None: return []
             for i in range(len(state[2])):
                 if state[2][i]:
                     new_st = (state[0], i, state[2])
-                    reachable.append((new_st, state[2][i]/sum(state[2],\
-                                      state[0] - self.custo_espiada)))
+                    reachable.append((new_st, state[2][i]/sum(state[2]),\
+                                      - self.custo_espiada))
         elif action == 'Sair':
             reachable.append(((state[0], None, None), 1, state[0]))
+        else:
+            print("BIG ERROR")
         return reachable
         # END_YOUR_CODE
 
@@ -139,8 +143,8 @@ class BlackjackMDP(util.MDP):
 class ValueIteration(util.MDPAlgorithm):
     """ Asynchronous Value iteration algorithm """
     def __init__(self):
-        self.state_to_action = {}
-        self.state_to_value = {}
+        self.pi = {}
+        self.V = {}
 
     def solve(self, mdp, epsilon=0.001):
         """
@@ -151,41 +155,56 @@ class ValueIteration(util.MDPAlgorithm):
         all of the values change by less than epsilon.
         The ValueIteration class is a subclass of util.MDPAlgorithm (see util.py).
         """
-        def computeQ(mdp, st_val, state, action):
-            # Return Q(state, action) based on st_val(state).
-            return sum(prob * (reward + mdp.discount() * st_val[newState]) \
-                        for newState, prob, reward in\
-                            mdp.succAndProbReward(state, action))
+        def computeQ(mdp, V, state, action):
+            # Return Q(state, action) based on V(state).
+            return sum(prob * (reward + mdp.discount() * V[newState]) \
+                    for newState, prob, reward in mdp.succAndProbReward(state, action))
 
-        def compute_optimal_policy(mdp, st_val):
-            # Return the optimal policy given the values st_val.
-            st_act = {}
+        def computeOptimalPolicy(mdp, V):
+            # Return the optimal policy given the values V.
+            pi = {}
             for state in mdp.states:
-                st_act[state] = max((computeQ(mdp, st_val, state, action), action)\
-                    for action in mdp.actions(state))[1]
-            return st_act
-
+                pi[state] = max((computeQ(mdp, V, state, action), action)\
+                     for action in mdp.actions(state))[1]
+            return pi
+        
         st_val = defaultdict(float)  # state -> value of state
 
         # Implement the main loop of Asynchronous Value Iteration Here:
         # BEGIN_YOUR_CODE
+        def finished (val1, val2, factor):
+            for st in val1.keys():
+                if abs(val1[st] - val2[st]) >= factor:
+                    return False
+            return True
+
+        if (mdp.discount() < 1): factor = epsilon*(1-mdp.discount())/mdp.discount()
+        else: factor = epsilon
+
         mdp.computeStates()
+        states = mdp.states
         next_val = {}; prev_val = {}
+        best_action = {}
         # starting next_val: any number larger than epsilon/len(mdp.states)
-        for st in mdp.states: next_val[st] = 0; prev_val[st] = -1
-        while sum(next_val.values()) - sum(prev_val.values()) > epsilon:
-            for st in mdp.states: prev_val[st] = next_val[st]
-            for st in mdp.states:
-                next_val[st] = max(mdp.actios(st),\
-                    key=lambda act: computeQ(mdp, prev_val, st, act))
+        for st in states:
+            prev_val[st] = -1
+            # if st[2] is None:
+            #     next_val[st] = st[0]
+            # else:
+            next_val[st] = 0
+        while not finished(next_val, prev_val, factor):
+            for st in states: prev_val[st] = next_val[st]
+            for st in states:
+                next_val[st] = max(computeQ(mdp, next_val, st, act)\
+                            for act in mdp.actions(st))
 
         # END_YOUR_CODE
 
         # Extract the optimal policy now
-        st_act = compute_optimal_policy(mdp, st_val)
+        st_act = computeOptimalPolicy(mdp, prev_val)
         # print("ValueIteration: %d iterations" % numIters)
-        self.state_to_action = st_act
-        self.state_to_value = st_val
+        self.pi = st_act
+        self.V = st_val
 
 # First MDP
 MDP1 = BlackjackMDP(valores_cartas=[1, 5], multiplicidade=2, limiar=10, custo_espiada=1)
@@ -199,7 +218,13 @@ def geraMDPxereta():
     optimal action for at least 10% of the states.
     """
     # BEGIN_YOUR_CODE
-    raise Exception("Not implemented yet")
+    # valores_cartas = [i for i in range(5, 12)]
+    # valores_cartas.append(30)
+    valores_cartas = [6, 22]
+    multiplicidade = 10
+    limiar = 20
+    custo_espiada = 1
+    return BlackjackMDP(valores_cartas, multiplicidade, limiar, custo_espiada)
     # END_YOUR_CODE
 
 
@@ -259,6 +284,7 @@ class QLearningAlgorithm(util.RLAlgorithm):
          HINT: Remember to check if s is a terminal state and s' None.
         """
         # BEGIN_YOUR_CODE
+        cur = self.getQ(state, action)
         raise Exception("Not implemented yet")
         # END_YOUR_CODE
 
