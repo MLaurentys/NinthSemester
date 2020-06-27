@@ -1,0 +1,33 @@
+
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{float}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{tikz}
+
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\lstset{columns=fullflexible,
+	mathescape=true,
+	numbers=left,
+	stepnumber=1,
+	morekeywords={return, if, while, True, False},
+	xleftmargin=5.0ex
+}
+
+\title{\vspace{-4.0cm}MAC0331 - Lista 7}
+\author{Matheus T. de Laurentys, 9793714}
+
+\begin{document}
+	\maketitle
+	\noindent
+	\textbf{Q 6:} \\
+	To improve the complexity one can pre-process the points by sorting them and processing the points in the increasing increasing order. Following the pre-process, the algorithm would follow with the sweep line algorithm. If sorted by X-coordinates, the initial triangle would be the three leftmost points, for example.
+	
+	\noindent
+	\textbf{Q 8.} \\
+	The algorithm, in the step it looks for a third point such that the triangle would have the largest area, can bump into its worst case. If such point, in all iterations, is one that will not divide the remaining points into reasonable sized sets (all the points in one side of triangle, for example), the algorithm will have $O(n \cdot h)$ time.  That is because there will be $n$ recursive calls, and each will have from 1 to h iterations to update the vector of vertices in the hull. 
+\end{document}
