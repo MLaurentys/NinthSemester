@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.db import connection
 from collections import namedtuple
 from django.template import loader
+from polls.query_helper import *
 
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
@@ -14,12 +15,24 @@ def query1(request):
         cursor.execute('SELECT * FROM usuario')
         result = dictfetchall(cursor)
         print(result)
-    
+
     template = loader.get_template('queries/query1.html')
     context = {'query1_result_list': result,}
-    
+
     return HttpResponse(template.render(context, request))
 
+def test1(request):
+    template = loader.get_template('queries/test1.html')
+    return HttpResponse(template.render())
 
+def test2(request):
+    query = build_insert_query('exame', ['id_exame', 'tipo', 'virus'],
+                                        [ 999, 'PCR', 'H1N1'])
+    print(query)
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        result = dictfetchall(cursor)
+        print(result)
+    return HttpResponse()
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
