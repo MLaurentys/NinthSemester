@@ -3,8 +3,19 @@ from django.http import HttpResponse
 from django.db import connection
 from collections import namedtuple
 from django.template import loader
-from polls.query_helper import *
+
 from .forms import crudForm
+from .query_helper import *
+
+def index(request):
+    if request.method == "POST":
+        form = crudForm(request.POST)
+        operation_value = form['operation'].value()
+        table_value = form['table'].value()
+        return HttpResponse("%s, %s" %(operation_value, table_value))
+    else:
+        form = crudForm()
+    return render(request, 'interface/index.html', {"form": form})
 
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
@@ -17,13 +28,13 @@ def query1(request):
         result = dictfetchall(cursor)
         print(result)
 
-    template = loader.get_template('queries/query1.html')
+    template = loader.get_template('interface/query1.html')
     context = {'query1_result_list': result,}
 
     return HttpResponse(template.render(context, request))
 
 def test1(request):
-    template = loader.get_template('queries/test1.html')
+    template = loader.get_template('interface/test1.html')
     return HttpResponse(template.render())
 
 def test2(request):
@@ -62,14 +73,3 @@ def test3(request):
     else:
         response = HttpResponse("Data did not exist!")
     return response
-
-
-def index(request):
-    if request.method == "POST":
-        form = crudForm(request.POST)
-        operation_value = form['operation'].value()
-        table_value = form['table'].value()
-        return HttpResponse("%s, %s" %(operation_value, table_value))
-    else:
-        form = crudForm()
-    return render(request, 'queries/index.html', {"form": form})
