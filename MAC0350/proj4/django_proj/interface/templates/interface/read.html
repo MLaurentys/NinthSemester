@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<title>Consulta</title>
+<body>
+	<p><a href="{% url 'index' %}">REALIZAR NOVO CRUD</a></p>
+	{% if user_table %}
+		<p><b>Lista de Usuários</b></p>
+		<p>TOTAL: {{user_table | length}}</p>
+		{% for row in user_table %}
+			<ul>
+				{% for person_row in person_table %}
+					{% if person_row.id_pessoa == row.id_pessoa %}
+						<li>CPF: {{person_row.cpf}}</li>
+						<li>nome: {{person_row.nome}}</li>
+						<li>data de nasc: {{person_row.data_de_nascimento}}</li>
+					{% endif %}
+				{% endfor %}
+				<li>area de pesquisa: {{row.area_de_pesquisa}}</li>
+				<li>instituicao: {{row.instituicao}}</li>
+				{% if row.id_tutor == None %}
+					<li>tutor: {{row.id_tutor}}</li>
+				{% else %}
+					{% for user_row in user_table %}
+						{% if user_row.id_usuario == row.id_tutor %}
+							{% for person_row in person_table %}
+								{% if person_row.id_pessoa == user_row.id_pessoa %}
+									<li>tutor: {{person_row.nome}}</li>
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+					{% endfor %}
+				{% endif %}
+				<li>login: {{row.login}}</li>
+				<li>senha: {{row.senha}}</li>
+			</ul>
+			<br>
+		{% endfor %}
+	{% elif profile_table %}
+		<p><b>Lista de Perfis</b></p>
+		<p>TOTAL: {{profile_table | length}}</p>
+		{% for row in profile_table %}
+		<ul>
+			<li>codigo: {{row.codigo}}</li>
+			<li>tipo: {{row.tipo}}</li>
+		</ul>
+		<br>
+		{% endfor %}
+	{% elif service_table %}
+		<p><b>Lista de Serviços</b></p>
+		<p>TOTAL: {{service_table | length}}</p>
+		{% for row in service_table %}
+		<ul>
+			<li>classe: {{row.classe}}</li>
+			<li>nome: {{row.nome}}</li>
+		</ul>
+		<br>
+		{% endfor %}
+	{% elif exam_table %}
+		<p><b>Lista de Exames</b></p>
+		<p>TOTAL: {{exam_table | length}}</p>
+		{% for row in exam_table %}
+		<ul>
+			<li>tipo: {{row.tipo}}</li>
+			<li>virus: {{row.virus}}</li>
+		</ul>
+		<br>
+		{% endfor %}
+	{% else %}
+		<p><i>A tabela está vazia.</i></p>
+	{% endif %}
+</body>
+</html>

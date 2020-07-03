@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
+	<title>Banco de Dados - CRUD</title>
 <body>
-  <h1>Para usar o banco de dados, basta escolher uma operação e uma tabela abaixo:</h1>
+  <h1>Para usar o banco de dados, basta escolher uma OPERAÇÃO e uma TABELA abaixo:</h1>
   <form action="/" method="post">
 		{% csrf_token %}
-		{{ form.as_p }}
+		{{ crudform.as_p }}
 		<button type="submit", name="crud_operation">Realizar CRUD</button>
   </form>
 </body>

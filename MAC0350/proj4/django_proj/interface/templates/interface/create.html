@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+	<title>Inserção</title>
+<body>
+	<p><a href="{% url 'index' %}">VOLTAR</a></p>
+	<h2>Preencha os campos abaixo para <i>INSERIR</i> uma nova linha na tabela <i>{{ table }}</i></h2>
+	<form action=/create method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input type="hidden" name="table" value={{ table }}>
+		<button type="submit", name="crud_operation">Inserir</button>
+	</form>
+</body>
+</html>

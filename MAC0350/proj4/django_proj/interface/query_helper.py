@@ -1,5 +1,3 @@
-
-
 def build_check_str (table_name, pkey_val):
     check_str = str(pkey_val).replace(':', '=')\
                     .replace(' ', '').strip("{}").replace("'","")
