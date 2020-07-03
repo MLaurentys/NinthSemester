@@ -10,5 +10,8 @@
 		<input type="hidden" name="table" value={{ table }}>
 		<button type="submit", name="crud_operation">Inserir</button>
 	</form>
+	{% for f in form.fields %}
+		{{ interest_field }}
+	{% endfor %}
 </body>
 </html>

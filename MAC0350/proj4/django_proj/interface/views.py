@@ -4,7 +4,7 @@ from django.db import connection
 from collections import namedtuple
 from django.template import loader
 
-from .forms import crudForm, userForm, profileForm, serviceForm, examForm
+from .forms import *
 from .query_helper import *
 
 def dictfetchall(cursor):
@@ -13,23 +13,9 @@ def dictfetchall(cursor):
 	return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 def test2(request):
-	check_query = build_check_str('exame', {'id_exame':'999'})
-	insert_query = build_insert_query('exame', ['id_exame', 'tipo', 'virus'],
-									  [ '999', 'PCR', 'H1N1'])
-	data_exists = False
 	with connection.cursor() as cursor:
-		cursor.execute(check_query)
-		result = dictfetchall(cursor)
-		if result[0]['count']:
-			data_exists = True
-		print(result)
-		if not data_exists:
-			cursor.execute(insert_query)
-	if data_exists:
-		response = HttpResponse("Data already exists!")
-	else:
-		response = HttpResponse("Data added to table!")
-	return response
+		get_columns(cursor, 'usuario')
+	return HttpResponse("<p><a href='/'>INÍCIO</a></p><p>Nenhuma inserção foi solicitada. Volte ao início da interface.</p>")
 
 def test3(request):
 	check_query = build_check_str('exame', {'id_exame':'999'})
@@ -51,31 +37,31 @@ def test3(request):
 
 
 def create(request):
-	if request.method == "POST":
-		if request.POST['table'] == "Usuario":
-			form = userForm(request.POST)
-			with connection.cursor() as cursor:
-				cursor.execute(build_check_str('usuario', {'cpf':form['CPF'].value()}))
-				result = dictfetchall(cursor)
-				if not result[0]['count']:
-					cursor.execute(build_insert_query('usuario', ['id_usuario', 'cpf', 'nome', 'data_de_nascimento', 'area de pesquisa', 'instituicao', 'id_tutor', 'login', 'senha', 'id_pessoa'], []))
-					return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Inserção feita com sucesso na tabela Usuário. Você pode realizar uma consulta para conferir.</p>")
-				else:
-					return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Dado já existe na tabela Usuário. Você pode tentar atualizá-lo, se quiser.</p>")
-		if request.POST['table'] == "Perfil":
-			form = profileForm(request.POST)
-			with connection.cursor() as cursor:
-				cursor.execute(build_check_str('perfil', {'codigo':form['codigo'].value()}))
-				result = dictfetchall(cursor)
-				if not result[0]['count']:
-					cursor.execute(build_insert_query('perfil', ['codigo', 'tipo'], [str(form['codigo'].value()), str(form['tipo'].value())]))
-					return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Inserção feita com sucesso na tabela Perfil. Você pode realizar uma consulta para conferir.</p>")
-				else:
-					return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Dado já existe na tabela Perfil. Você pode tentar atualizá-lo, se quiser.</p>")
-		else:
-			return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Inserção feita com sucesso na tabela Exame.</p>")
-	else:
+	if request.method != "POST":
 		return HttpResponse("<p><a href='/'>INÍCIO</a></p><p>Nenhuma inserção foi solicitada. Volte ao início da interface.</p>")
+	if request.POST['table'] == "Usuario":
+		form = userForm(request.POST)
+		with connection.cursor() as cursor:
+			cursor.execute(build_check_str('usuario', {'cpf':form['CPF'].value()}))
+			result = dictfetchall(cursor)
+			if not result[0]['count']:
+				cursor.execute(build_insert_query('usuario', ['id_usuario', 'cpf', 'nome', 'data_de_nascimento', 'area de pesquisa', 'instituicao', 'id_tutor', 'login', 'senha', 'id_pessoa'], []))
+				return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Inserção feita com sucesso na tabela Usuário. Você pode realizar uma consulta para conferir.</p>")
+			else:
+				return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Dado já existe na tabela Usuário. Você pode tentar atualizá-lo, se quiser.</p>")
+	if request.POST['table'] == "Perfil":
+		form = profileForm(request.POST)
+		with connection.cursor() as cursor:
+			cursor.execute(build_check_str('perfil', {'codigo':str(form['codigo'].value())}))
+			result = dictfetchall(cursor)
+			if not result[0]['count']:
+				cursor.execute(build_insert_query('perfil', ['codigo', 'tipo'], [str(form['codigo'].value()), str(form['tipo'].value())]))
+				return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Inserção feita com sucesso na tabela Perfil. Você pode realizar uma consulta para conferir.</p>")
+			else:
+				return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Dado já existe na tabela Perfil. Você pode tentar atualizá-lo, se quiser.</p>")
+	else:
+		return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Inserção feita com sucesso na tabela Exame.</p>")
+	cursor.close()
 
 def index(request):
 	if request.method == "POST":
@@ -83,15 +69,15 @@ def index(request):
 		operation = crudform['operation'].value()
 		table = crudform['table'].value()
 		if operation == 'create':
-			if table == 'Usuario':
-				form = userForm()
-			elif table == 'Perfil':
-				form = profileForm()
-			elif table == 'Servico':
-				form = serviceForm()
-			else:
-				form = examForm()
-			return render(request, 'interface/create.html', {"operation": operation, "table": table, "form": form})
+			cursor2 = connection.cursor()
+			columns = get_columns(cursor2, table)
+			form = myForm(columns)
+			cursor2.close()
+			# for a in dir(form):
+			# 	if not a.startswith('__'):
+			# 		print(a)
+			return render(request, 'interface/create.html',
+					{"operation": operation, "table": table, "form": form})
 		elif operation == 'read':
 			if table == 'Usuario':
 				with connection.cursor() as cursor:

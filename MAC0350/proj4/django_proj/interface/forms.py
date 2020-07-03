@@ -1,5 +1,18 @@
 from django import forms
 
+# def make_form (columns):
+# 	choices = {col:forms.CharField() for col in columns}
+# 	dynamic_form = type('dynamic_form', (myForm,), choices)
+# 	return dynamic_form
+
+class myForm(forms.Form):
+	def __init__(self, form_fields=[], *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		for k in form_fields:
+			print("k =", k)
+			self.fields[k] = forms.CharField(label=k)
+
+
 class crudForm(forms.Form):
 	OPERATION_CHOICES=[('create','Inserir'), ('read','Consultar'), ('update','Atualizar'), ('delete','Eliminar')]
 	TABLE_CHOICES=[('Usuario','Usuário'), ('Perfil','Perfil'), ('Servico','Serviço'), ('Exame','Exame')]

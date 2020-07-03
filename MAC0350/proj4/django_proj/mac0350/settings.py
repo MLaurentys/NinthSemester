@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'interface.apps.InterfaceConfig',
+    'mac0350',
 ]
 
 MIDDLEWARE = [
