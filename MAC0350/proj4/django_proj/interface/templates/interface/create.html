@@ -6,12 +6,10 @@
 	<h2>Preencha os campos abaixo para <i>INSERIR</i> uma nova linha na tabela <i>{{ table }}</i></h2>
 	<form action=/create method="post">
 		{% csrf_token %}
+		<p><i>{{message}}</i></p>
 		{{ form.as_p }}
 		<input type="hidden" name="table" value={{ table }}>
 		<button type="submit", name="crud_operation">Inserir</button>
 	</form>
-	{% for f in form.fields %}
-		{{ interest_field }}
-	{% endfor %}
 </body>
 </html>

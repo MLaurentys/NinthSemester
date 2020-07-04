@@ -3,8 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.db import connection
 from collections import namedtuple
 from django.template import loader
-
-from .forms import *
+from .defines import *
+from .forms import crudForm, userForm, profileForm, serviceForm, examForm
 from .query_helper import *
 
 def dictfetchall(cursor):
@@ -12,72 +12,88 @@ def dictfetchall(cursor):
 	columns = [col[0] for col in cursor.description]
 	return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-def test2(request):
-	with connection.cursor() as cursor:
-		get_columns(cursor, 'usuario')
-	return HttpResponse("<p><a href='/'>INÍCIO</a></p><p>Nenhuma inserção foi solicitada. Volte ao início da interface.</p>")
-
-def test3(request):
-	check_query = build_check_str('exame', {'id_exame':'999'})
-	delete_query = build_delete_query('exame', {'id_exame':'999'})
-	data_exists = False
-	with connection.cursor() as cursor:
-		cursor.execute(check_query)
-		result = dictfetchall(cursor)
-		if result[0]['count']:
-			data_exists = True
-		print(result)
-		if data_exists:
-			cursor.execute(delete_query)
-	if data_exists:
-		response = HttpResponse("Data used to exist!")
-	else:
-		response = HttpResponse("Data did not exist!")
-	return response
-
-
 def create(request):
 	if request.method != "POST":
-		return HttpResponse("<p><a href='/'>INÍCIO</a></p><p>Nenhuma inserção foi solicitada. Volte ao início da interface.</p>")
-	if request.POST['table'] == "Usuario":
+		return HttpResponse(create_not_post)
+	cursor = connection.cursor()
+	page = None
+	print(request.POST['table'])
+	print(request.POST['table'] == usuario)
+	if request.POST['table'] == usuario:
+		print("ENTROU 1")
 		form = userForm(request.POST)
-		with connection.cursor() as cursor:
-			cursor.execute(build_check_str('usuario', {'cpf':form['CPF'].value()}))
-			result = dictfetchall(cursor)
-			if not result[0]['count']:
-				cursor.execute(build_insert_query('usuario', ['id_usuario', 'cpf', 'nome', 'data_de_nascimento', 'area de pesquisa', 'instituicao', 'id_tutor', 'login', 'senha', 'id_pessoa'], []))
-				return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Inserção feita com sucesso na tabela Usuário. Você pode realizar uma consulta para conferir.</p>")
-			else:
-				return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Dado já existe na tabela Usuário. Você pode tentar atualizá-lo, se quiser.</p>")
-	if request.POST['table'] == "Perfil":
+		try:
+			user_id = int(form['id_usuario'].value())
+			person_id = int(form['id_pessoa'].value())
+			tutor_id = int(form['id_tutor'].value())
+		except:
+			page = render(request, create_html_path, {"operation": "create", "table": "Usuario", "form": userForm(), "message": "ERRO: id inválido"})
+		cursor.execute(build_check_str('usuario', {'id_usuario':form['id_usuario'].value()}))
+		user_result = dictfetchall(cursor)
+		cursor.execute(build_check_str('pessoa', {'id_pessoa':form['id_pessoa'].value()}))
+		person_result = dictfetchall(cursor)
+		if not user_result[0]['count'] and person_result[0]['count']:
+			cursor.execute(build_insert_query('usuario', ['id_usuario', 'area_de_pesquisa', 'instituicao', 'id_tutor', 'login', 'senha'], [form['id_usuario'].value(), form['area_de_pesquisa'].value(), form['instituicao'].value(), form['id_tutor'].value(), form['login'].value(), form['senha'].value()]))
+			page = render(request, create_html_path, {"operation": "create", "table": "Usuario", "form": userForm(), "message": create_success})
+		else:
+			page = render(request, create_html_path, {"operation": "create", "table": "Usuario", "form": userForm(), "message": create_existant_user})
+	elif request.POST['table'] == "Perfil":
 		form = profileForm(request.POST)
-		with connection.cursor() as cursor:
-			cursor.execute(build_check_str('perfil', {'codigo':str(form['codigo'].value())}))
-			result = dictfetchall(cursor)
-			if not result[0]['count']:
-				cursor.execute(build_insert_query('perfil', ['codigo', 'tipo'], [str(form['codigo'].value()), str(form['tipo'].value())]))
-				return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Inserção feita com sucesso na tabela Perfil. Você pode realizar uma consulta para conferir.</p>")
-			else:
-				return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Dado já existe na tabela Perfil. Você pode tentar atualizá-lo, se quiser.</p>")
+		try:
+			profile_id = int(form['id_perfil'].value())
+		except:
+			page = render(request, create_html_path, {"operation": "create", "table": "Perfil", "form": profileForm(), "message": "ERRO: id inválido"})
+		cursor.execute(build_check_str('perfil', {'id_perfil':form['id_perfil'].value()}))
+		profile_result = dictfetchall(cursor)
+		if not profile_result[0]['count']:
+			cursor.execute(build_insert_query('perfil', ['id_perfil', 'codigo', 'tipo'], [form['id_perfil'].value(), form['codigo'].value(), form['tipo'].value()]))
+			page = render(request, create_html_path, {"operation": "create", "table": "Perfil", "form": profileForm(), "message": create_success})
+		else:
+			page = render(request, create_html_path, {"operation": "create", "table": "Perfil", "form": profileForm(), "message": "ERRO: perfil já existente. Você pode VOLTAR e tentar atualizar a tabela."})
+	elif request.POST['table'] == "Servico":
+		form = serviceForm(request.POST)
+		try:
+			service_id = int(form['id_servico'].value())
+		except:
+			return render(request, create_html_path, {"operation": "create", "table": "Servico", "form": serviceForm(), "message": "ERRO: id inválido"})
+		cursor.execute(build_check_str('servico', {'id_servico':form['id_servico'].value()}))
+		service_result = dictfetchall(cursor)
+		if not service_result[0]['count']:
+			cursor.execute(build_insert_query('servico', ['id_servico', 'classe', 'nome'], [form['id_servico'].value(), form['classe'].value(), form['nome'].value()]))
+			page = render(request, create_html_path, {"operation": "create", "table": "Servico", "form": serviceForm(), "message": "Inserção feita com SUCESSO. Realize outra inserção ou faça uma consulta para conferir."})
+		else:
+			page = render(request, create_html_path, {"operation": "create", "table": "Servico", "form": serviceForm(), "message": "ERRO: serviço já existente. Você pode VOLTAR e tentar atualizar a tabela."})
 	else:
-		return HttpResponse("<p><a href='/'>REALIZAR NOVO CRUD</a></p><p>Inserção feita com sucesso na tabela Exame.</p>")
+		print("ENTROU 2")
+		form = examForm(request.POST)
+		try:
+			exam_id = int(form['id_exame'].value())
+		except:
+			page = render(request, create_html_path, {"operation": "create", "table": "Exame", "form": examForm(), "message": "ERRO: id inválido"})
+		cursor.execute(build_check_str('exame', {'id_exame':form['id_exame'].value()}))
+		exam_result = dictfetchall(cursor)
+		if not exam_result[0]['count']:
+			cursor.execute(build_insert_query('exame', ['id_exame', 'tipo', 'virus'], [form['id_exame'].value(), form['tipo'].value(), form['virus'].value()]))
+			page = render(request, create_html_path, {"operation": "create", "table": "Exame", "form": examForm(), "message": "Inserção feita com SUCESSO. Realize outra inserção ou faça uma consulta para conferir."})
+		else:
+			page = render(request, create_html_path, {"operation": "create", "table": "Exame", "form": examForm(), "message": "ERRO: exame já existente. Você pode VOLTAR e tentar atualizar a tabela."})
 	cursor.close()
-
+	return page
 def index(request):
 	if request.method == "POST":
 		crudform = crudForm(request.POST)
 		operation = crudform['operation'].value()
 		table = crudform['table'].value()
 		if operation == 'create':
-			cursor2 = connection.cursor()
-			columns = get_columns(cursor2, table)
-			form = myForm(columns)
-			cursor2.close()
-			# for a in dir(form):
-			# 	if not a.startswith('__'):
-			# 		print(a)
-			return render(request, 'interface/create.html',
-					{"operation": operation, "table": table, "form": form})
+			if table == 'Usuario':
+				form = userForm()
+			elif table == 'Perfil':
+				form = profileForm()
+			elif table == 'Servico':
+				form = serviceForm()
+			else:
+				form = examForm()
+			return render(request, create_html_path, {"operation": operation, "table": table, "form": form})
 		elif operation == 'read':
 			if table == 'Usuario':
 				with connection.cursor() as cursor:

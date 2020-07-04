@@ -1,18 +1,5 @@
 from django import forms
 
-# def make_form (columns):
-# 	choices = {col:forms.CharField() for col in columns}
-# 	dynamic_form = type('dynamic_form', (myForm,), choices)
-# 	return dynamic_form
-
-class myForm(forms.Form):
-	def __init__(self, form_fields=[], *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		for k in form_fields:
-			print("k =", k)
-			self.fields[k] = forms.CharField(label=k)
-
-
 class crudForm(forms.Form):
 	OPERATION_CHOICES=[('create','Inserir'), ('read','Consultar'), ('update','Atualizar'), ('delete','Eliminar')]
 	TABLE_CHOICES=[('Usuario','Usuário'), ('Perfil','Perfil'), ('Servico','Serviço'), ('Exame','Exame')]
@@ -21,23 +8,31 @@ class crudForm(forms.Form):
 	table = forms.ChoiceField(choices=TABLE_CHOICES, widget=forms.RadioSelect)
 
 class userForm(forms.Form):
+	id_usuario = forms.CharField(label="id_usuario")
+	id_pessoa = forms.CharField(label="id_pessoa")
 	cpf = forms.CharField(label="CPF")
 	nome = forms.CharField(label="nome")
 	data_de_nascimento = forms.DateField(label="data de nasc")
 	area_de_pesquisa = forms.CharField(label="area de pesquisa")
 	instituicao = forms.CharField(label="instituicao")
+	id_tutor = forms.CharField(label="id_tutor")
 	login = forms.CharField(label="login")
 	senha = forms.CharField(label="senha")
 
 class profileForm(forms.Form):
+	id_perfil = forms.CharField(label="id_perfil")
 	codigo = forms.CharField(label="codigo")
 	tipo = forms.CharField(label="tipo")
 
 class serviceForm(forms.Form):
-	classe = forms.CharField(label="classe")
+	CRUD_CHOICES=[('inserção','inserção'), ('visualização','visualização'), ('alteração','alteração'), ('remoção','remoção')]
+
+	id_servico = forms.CharField(label="id_servico")
+	classe = forms.ChoiceField(choices=CRUD_CHOICES, widget=forms.RadioSelect)
 	nome = forms.CharField(label="nome")
 
 class examForm(forms.Form):
+	id_exame = forms.CharField(label="id_exame")
 	tipo = forms.CharField(label="tipo")
 	virus = forms.CharField(label="virus")
 	

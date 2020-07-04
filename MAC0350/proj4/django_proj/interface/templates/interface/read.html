@@ -8,6 +8,8 @@
 		<p>TOTAL: {{user_table | length}}</p>
 		{% for row in user_table %}
 			<ul>
+				<li>id_usuario = {{row.id_usuario}}</li>
+				<li>id_pessoa = {{row.id_pessoa}}</li>
 				{% for person_row in person_table %}
 					{% if person_row.id_pessoa == row.id_pessoa %}
 						<li>CPF: {{person_row.cpf}}</li>
@@ -40,6 +42,7 @@
 		<p>TOTAL: {{profile_table | length}}</p>
 		{% for row in profile_table %}
 		<ul>
+			<li>id_perfil: {{row.id_perfil}}</li>
 			<li>codigo: {{row.codigo}}</li>
 			<li>tipo: {{row.tipo}}</li>
 		</ul>
@@ -50,6 +53,7 @@
 		<p>TOTAL: {{service_table | length}}</p>
 		{% for row in service_table %}
 		<ul>
+			<li>id_servico: {{row.id_servico}}</li>
 			<li>classe: {{row.classe}}</li>
 			<li>nome: {{row.nome}}</li>
 		</ul>
@@ -60,6 +64,7 @@
 		<p>TOTAL: {{exam_table | length}}</p>
 		{% for row in exam_table %}
 		<ul>
+			<li>id_exame: {{row.id_exame}}</li>
 			<li>tipo: {{row.tipo}}</li>
 			<li>virus: {{row.virus}}</li>
 		</ul>
