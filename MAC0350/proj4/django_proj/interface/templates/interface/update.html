@@ -2,7 +2,30 @@
 <html>
 	<title>Consulta</title>
 <body>
-	<p><a href="{% url 'index' %}">REALIZAR NOVO CRUD</a></p>
+	{% if not selected_id %}
+		<p><a href="{% url 'index' %}">VOLTAR</a></p>
+		<h2>Preencha o campo de id abaixo para escolher qual linha <i>ATUALIZAR</i> da tabela <i>{{ table }}</i></h2>
+		<form action=/query method="post">
+			{% csrf_token %}
+			<p><i>{{message}}</i></p>
+			{{ form }}
+			<input type="hidden" name="table" value={{ table }}>
+			<input type="hidden" name="status" value="select">
+			<button type="submit", name="crud_operation">Escolher</button>
+		</form>
+	{% else %}
+		<p><a href="{% url 'index' %}">INÍCIO</a></p>
+		<h2>Id escolhido com sucesso. Agora basta <i>ATUALIZAR</i> os dados que que quiser da linha selecionada.</h2>
+		<form action=/update method="post">
+			{% csrf_token %}
+			<p><i>{{message}}</i></p>
+			{{ form.as_p }}
+			<input type="hidden" name="table" value={{ table }}>
+			<input type="hidden" name="status" value="update">
+			<button type="submit", name="crud_operation">Atualizar</button>
+		</form>
+	{% endif %}
+
 	{% if user_table %}
 		<p><b>Lista de Usuários</b></p>
 		<p>TOTAL: {{user_table | length}}</p>

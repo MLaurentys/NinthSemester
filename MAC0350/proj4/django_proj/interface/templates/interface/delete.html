@@ -2,7 +2,15 @@
 <html>
 	<title>Consulta</title>
 <body>
-	<p><a href="{% url 'index' %}">REALIZAR NOVO CRUD</a></p>
+	<p><a href="{% url 'index' %}">VOLTAR</a></p>
+	<h2>Preencha o campo de id abaixo para <i>ELIMINAR</i> uma linha da tabela <i>{{ table }}</i></h2>
+	<form action=/delete method="post">
+		{% csrf_token %}
+		<p><i>{{message}}</i></p>
+		{{ form }}
+		<input type="hidden" name="table" value={{ table }}>
+		<button type="submit", name="crud_operation">Delete</button>
+	</form>
 	{% if user_table %}
 		<p><b>Lista de Usuários</b></p>
 		<p>TOTAL: {{user_table | length}}</p>
