@@ -5,11 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/MAC0425/pe03",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/MAC0331/vjudge/a.out",
-            "args": ["-std=g++17", "-g", "-O0", "<", "t"],
+            "args": [
+                "-std=g++17",
+                "-g",
+                "-O0",
+                "<",
+                "t"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/MAC0331/vjudge",
             "environment": [],
