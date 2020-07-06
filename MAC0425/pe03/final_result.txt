@@ -1,26 +1,25 @@
 ******************************
 Code quality:
 ------------------------------
-Code grade: 7.29/10.0	(Great code quality)
+Code grade: 7.98/10.0	(Great code quality)
 ------------------------------
 Standards deviation:
 statement:	0
 info:	0
-convention:	33
-refactor:	1
-warning:	1
+convention:	31
+refactor:	2
+warning:	3
 error:	0
 fatal:	0
 ------------------------------
 Deviation description:
-trailing-whitespace:	1
 bad-whitespace:	1
-superfluous-parens:	1
-singleton-comparison:	1
-multiple-statements:	5
-invalid-name:	24
-unused-variable:	1
+invalid-name:	29
+redefined-outer-name:	2
+multiple-statements:	1
 too-few-public-methods:	1
+no-else-return:	1
+unused-variable:	1
 ******************************
 Tests:
 ------------------------------
@@ -40,7 +39,6 @@ Test concluded without errors
 Grade in the Test02-02: 10.0/10.0
 ------------------------------
 Part03-01 QLearningAlgorithm:
-Python error: Not implemented yet
-Test did not conclude
-Receiving grade 0.0 in the test
-Grade in the Test03-01: 0.0/10.0
+QLearningAlgorithm:	4/4 correct
+Test concluded without errors
+Grade in the Test03-01: 10.0/10.0

@@ -16,15 +16,20 @@
   Nome : Matheus Tararam de Laurentys
   NUSP : 9793714
 
-  Referencias: Com excecao das rotinas fornecidas no enunciado
-  e em sala de aula, caso voce tenha utilizado alguma referencia,
-  liste-as abaixo para que o seu programa nao seja considerado
-  plagio ou irregular.
+  Referencias:
+  Para complementar a iteracao de valores: https://artint.info/html/
+  ArtInt_227.html#:~:text=Value%20iteration%20is%20a%20method,
+  uses%20an%20arbitrary%20end%20point.
 
   Exemplo:
   - O algoritmo Quicksort foi baseado em:
   https://pt.wikipedia.org/wiki/Quicksort
   http://www.ime.usp.br/~pf/algoritmos/aulas/quick.html
+
+  Comentario:
+  Tive um grande dificuldade em fazer bons features. No final deste ep,
+  existe um teste em que consigo cera 70% de acerto em relacao a iteracao.
+  No entando algumas vezes ha um erro muito grande que nao posso explicar
 """
 
 import math
@@ -73,11 +78,7 @@ class BlackjackMDP(util.MDP):
         Return set of actions possible from |state|.
         You do not must to modify this function.
         """
-        if state[2] is None:
-            return ['Sair']
-        if state[1] is None:
-            return ['Pegar', 'Espiar', 'Sair']
-        return ['Pegar', 'Sair']
+        return ['Pegar', 'Espiar', 'Sair']
 
     def succAndProbReward(self, state, action):
         """
@@ -108,7 +109,8 @@ class BlackjackMDP(util.MDP):
             return (new_st, prob, 0)
 
         reachable = []
-        if state[2] == None: return []
+        if state[2] is None:
+            return []
         if action == 'Pegar':
             if state[1] is None:
                 for i in range(len(state[2])):
@@ -117,7 +119,8 @@ class BlackjackMDP(util.MDP):
             else:
                 reachable.append(make_draw_state(state, state[1], True))
         elif action == 'Espiar':
-            if state[1] is not None: return []
+            if state[1] is not None:
+                return []
             for i in range(len(state[2])):
                 if state[2][i]:
                     new_st = (state[0], i, state[2])
@@ -167,36 +170,34 @@ class ValueIteration(util.MDPAlgorithm):
                 pi[state] = max((computeQ(mdp, V, state, action), action)\
                      for action in mdp.actions(state))[1]
             return pi
-        
+
         st_val = defaultdict(float)  # state -> value of state
 
         # Implement the main loop of Asynchronous Value Iteration Here:
         # BEGIN_YOUR_CODE
-        def finished (val1, val2, factor):
+        def finished(val1, val2, factor):
             for st in val1.keys():
                 if abs(val1[st] - val2[st]) >= factor:
                     return False
             return True
 
-        if (mdp.discount() < 1): factor = epsilon*(1-mdp.discount())/mdp.discount()
+        if mdp.discount() < 1:
+            factor = epsilon*(1-mdp.discount())/mdp.discount()
         else: factor = epsilon
 
         mdp.computeStates()
         states = mdp.states
-        next_val = {}; prev_val = {}
-        best_action = {}
+        next_val = {}
+        prev_val = {}
         # starting next_val: any number larger than epsilon/len(mdp.states)
-        for st in states:
-            prev_val[st] = -1
-            # if st[2] is None:
-            #     next_val[st] = st[0]
-            # else:
-            next_val[st] = 0
+        for st_ in states:
+            prev_val[st_] = -1
+            next_val[st_] = 0
         while not finished(next_val, prev_val, factor):
-            for st in states: prev_val[st] = next_val[st]
-            for st in states:
-                next_val[st] = max(computeQ(mdp, next_val, st, act)\
-                            for act in mdp.actions(st))
+            for st_ in states: prev_val[st_] = next_val[st_]
+            for st_ in states:
+                next_val[st_] = max(computeQ(mdp, next_val, st_, act)\
+                            for act in mdp.actions(st_))
 
         # END_YOUR_CODE
 
@@ -277,15 +278,35 @@ class QLearningAlgorithm(util.RLAlgorithm):
 
     def incorporateFeedback(self, state, action, reward, newState):
         """
-         We will call this function with (s, a, r, s'), which you should use to update |weights|.
+         We will call this function with (s, a, r, s'), which you should
+         use to update |weights|.
          You should update the weights using self.getStepSize(); use
          self.getQ() to compute the current estimate of the parameters.
 
          HINT: Remember to check if s is a terminal state and s' None.
         """
         # BEGIN_YOUR_CODE
-        cur = self.getQ(state, action)
-        raise Exception("Not implemented yet")
+        def update_terminal(reward, q_val, _):
+            return self.getStepSize() * (reward - q_val)
+
+        def update_reg(reward, q_val, newState):
+            max_new_s = max([self.getQ(newState, act)\
+                for act in self.actions(newState)])
+            dif = reward + self.discount * max_new_s - q_val
+            return self.getStepSize() * dif
+
+        if newState is None:
+            #return
+            update = update_terminal
+        else:
+            update = update_reg
+        q_val = self.getQ(state, action)
+        for feat_, val_ in self.featureExtractor(state, action):
+            to_update = update(reward, q_val, newState)
+            if to_update != 0:
+                #total = (abs(to_update) + abs(val_))
+                self.weights[feat_] += to_update * val_# * (to_update/total)
+
         # END_YOUR_CODE
 
 def identityFeatureExtractor(state, action):
@@ -311,26 +332,64 @@ def blackjackFeatureExtractor(state, action):
     (See identityFeatureExtractor() above for a simple example.)
     """
     # BEGIN_YOUR_CODE
-    raise Exception("Not implemented yet")
+    # feature 1
+    ret = []
+
+    # feature 1: Identity Feature
+    feat_ = ('Identity Feature',state[0],action)
+    value_ = 1 # any number
+    ret.append((feat_, value_))
+
+    # feature 2: remaining cards of the deck
+    feat_ = 'Remaining cards'
+    value_ = sum(state[2]) if state[2] is not None else 0
+    if action == 'Pegar':
+        value_ -= 1
+    ret.append((feat_, value_))
+
+    # feature 3: profit if leaving immediately
+    feat_ = 'Immediate Profit'
+    value_ = 0
+    if action == 'Sair':
+        value_ += state[0]
+    elif action == 'Espiar':
+        value_ -= 1 # any number -> weight is handling this
+    ret.append((feat_, value_))
+
+    # 1 feature per card in deck
+    if state[2] is not None:
+        card_deck = tuple([1 if num > 0 else 0 for num in state[2]])
+        feat_ = ('Has deck', card_deck, action)
+        value_ = 1 # any number
+        ret.append((feat_, value_))
+
+        for i, num in enumerate(state[2]):
+            feat_ = ('Has card', i, num, action)
+            value_ = 1
+            ret.append((feat_, value_))
+    return ret
     # END_YOUR_CODE
 
-# smallMDP = BlackjackMDP(valores_cartas=[1, 5], multiplicidade=2,
-#                                        limiar=15, custo_espiada=1)
-# preEmptyState = (11, None, (1,0))
-# # Make sure the succAndProbReward function is implemented correctly.
-# tests = [
-#     ([((12, None, None), 1, 12)], smallMDP, preEmptyState, 'Pegar'),
-#     ([((5, None, (2, 1)), 1, 0)], smallMDP, (0, 1, (2, 2)), 'Pegar')
-# ]
-# total_tests_global = 0
-# total_tests = 0
-# results = 0
-# for gold, mdp, state, action in tests:
-#     total_tests_global += 1
-#     total_tests += 1
-#     res = mdp.succAndProbReward(state, action)
-#     print(gold)
-#     print(res)
-#     if  gold==res:
-#         results += 1
-# print(results)
+# ql = QLearningAlgorithm(largeMDP.actions, largeMDP.discount(), blackjackFeatureExtractor)
+# util.simulate(largeMDP, ql, maxIterations=10000, numTrials=100)
+# vi = ValueIteration()
+# vi.solve(largeMDP)
+# states = largeMDP.states
+# ql_ans={}
+# for st in states:
+#     max_v = -float('inf')
+#     max_a = ''
+#     for act in largeMDP.actions(st):
+#         b = ql.getQ(st, act)
+#         if b == float('nan'): print("WTF")
+#         if b > max_v:
+#             max_v = b
+#             max_a = act
+#     ql_ans[st] = max_a
+# vi_answ = vi.pi
+# total = len(states)
+# partial = 0
+# for st in states:
+#     if vi_answ[st] == ql_ans[st]:
+#         partial += 1
+# print("Total = %d Partial = %d" % (total, partial))
