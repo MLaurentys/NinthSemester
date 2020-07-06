@@ -98,9 +98,9 @@ def delete(request):
 	cur_table = request.POST['table']
 	if cur_table == table_usuario:
 		page = delete_user(request, cursor)
-	elif cur_table == perfil:
+	elif cur_table == table_profile:
 		page = delete_profile(request, cursor)
-	elif cur_table == servico:
+	elif cur_table == table_service:
 		page = delete_service(request, cursor)
 	else:
 		page = delete_exam(request, cursor)
