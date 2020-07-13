@@ -1,7 +1,5 @@
-from geocomp.lineintersections.segments_math import at_left
-from geocomp.lineintersections.rbtree import RBNode
-# Used Node in PE02
-
+from geocomp.common.prim import left as at_left
+from geocomp.common.point import Point
 # Regular Node Class that represents a point in 2D-space
 class Node:
     def __init__(self, pt):
@@ -17,7 +15,7 @@ class Node:
         else:
             return self.x < other.x
         
-    def get_point (self): return (self.x, self.y)
+    def get_point (self): return Point(self.x, self.y)
 
 # Augmented 2D-point that carries information on its belonging
 class Node_Event:
@@ -25,7 +23,6 @@ class Node_Event:
         super().__init__()
         self.node = Node(pt)
         self.segments = []
-        # references to segment nodes
         self.left = set()
         self.right = set()
         self.intersections = set()
@@ -37,7 +34,9 @@ class Node_Event:
         elif (identifier == 1):
             self.right.add(seg)
         elif (identifier == -1):
-            self.add_to_intersection(seg[0], seg[1])
+            self.intersections.add(seg[0])
+            self.intersections.add(seg[1])
+            #self.add_to_intersection(seg[0], seg[1])
         else:
             print ("add_to_segment usage error. Ignoring...")
 
@@ -63,20 +62,11 @@ class Node_Seg:
         self.left = None
         self.right = None
         self.seg = seg
-        self.start = Node(seg.init)
-        self.end = Node(seg.to)
-        self.key = self.start
 
-    def get_val(self):
-        return self.start, self.end, self.key, self.seg
+    def get_val (self):
+        return self.seg
 
-    def change_key (self, point):
-        self.key = Node(point)
-
-    def set_val(self, start, end, key, seg):
-        self.start = start
-        self.end = end
-        self.key = key
+    def set_val (self, seg):
         self.seg = seg
 
     def __lt__(self, other):
