@@ -1,0 +1,87 @@
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{float}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{tikz}
+
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\lstset{columns=fullflexible,
+	mathescape=true,
+	numbers=left,
+	stepnumber=1,
+	morekeywords={for, range, return, if, while, True, False},
+	xleftmargin=5.0ex
+}
+
+\title{\vspace{-4.0cm}MAC0331 - Lista 8}
+\author{Matheus T. de Laurentys, 9793714}
+
+\begin{document}
+	\maketitle
+	\noindent
+	\textbf{Q 5:} \\
+	\begin{lstlisting}
+//points describe a y-monotone polygon
+CONVEX_HULL(points, n):
+	//$v_0$ is bottom-most
+	//$v_{top}$ is top-most
+	//$v_1\rightarrow v_{top-1}$ is the left part of polygon (ascending y coord)
+	//$v_{top+1}\rightarrow v_{n-1}$ is the right part of polygon (ascending y coord)
+	top = prepare_points(points) //LINEAR
+	//angles_i is the angle formed by $points_0\rightarrow points_i$ and $y=0$ line
+	angles = calculate_angles(points) //LINEAR
+	hull $\leftarrow$ [0, top]
+	stack $\leftarrow$ Stack
+	stack.push(1)
+	for i in range (2, top):
+		while (True):
+			j = stack.top()
+			if angles$_i \ge$ angles$_j$:
+				stack.pop()
+				stack.push(i)
+			else:
+				stack.push(i)
+				break
+	hull.append(inds for inds in stack)
+	stack.empty()
+	stack.push(top+1)
+	for i in range (top+2, n-1):
+		while (True):
+			j = stack.top()
+			if angles$_i \le$ angles$_j$:
+				stack.pop()
+				stack.push(i)
+			else:
+				stack.push(i)
+				break
+	hull.append(inds for inds in stack)
+	return hull
+	\end{lstlisting}
+	\noindent
+	\textbf{Q 8:} \\
+	\textbf{a)} \\
+	Let $H$ be the convex hull of the set of points $P$ and $(p_1, p_2)$ be the points whose distance is the diameter of $P$. If the two points do not belong to $H$, then, either one or neither do.\\
+	If $p_1 \in H$, then there are no points outside the circumference with center in $p_1$ and radius equals to the diameter. However, if that was the case, $p_2$ would be outside the convex hull, therefore, this is not a possibility.\\
+	If $p_1, p_2 \notin H$, then, there will be points outside the circumference with center in $p_1$ and radius equals to the diameter, otherwise either $p_1$ or $p_2$ would be outside the convex hull. However, that would imply that the distance between $p_1$ and any of such points is greater than the diameter, and that is not possible.\\
+	$\therefore$ both $p_1, p_2 \in H$
+	
+	\noindent
+	\textbf{b)} \\
+	There are possibly many supporting lines in each vertex, however only parallel lines have positive distance. Let $L$ be the set of pairs of parallel supporting lines and $p_1, p_2$ be the points whose distance is the diameter.\\
+	There is a pair $(l_1, l_2) \in L$ of lines with distance equal to the diameter, because it is possible to build $l_1$ on the $p_1$ vertex and $l_2$ on the $p_2$ vertex: any two parallel supporting lines over these vertices would do. It is possible to build an instance of such pair by taking either $l^*_1$ or $l^*_2$ and the parallel line over the other vertex (where $l^*_i$ is the supporting line over vertex $i$ where the angles formed by the line and the edge of the hull passing by $v_i$ are the same).\\
+	It is not possible for a pair $(l_i, l_j) \in L$ to have distance greater than the diameter, since the distance between their respective vertices $v_i$ and $v_j$ bounds the distance between their supporting lines.\\
+	$\therefore$ the diameter of $P$ is the same as the maximum distance of any pair in $L$.
+	
+	\noindent
+	\textbf{c)}\\
+	For each vertex of $P$ find the interval of angles that the supporting lines can have with the $y=0$ line. These angles $\subset [-\pi/2, \pi/2]$. If any two vertices have any common possible angle, then they are an antipodal pair.
+	
+	\noindent
+	\textbf{d)}\\
+	It is possible to get such value by calculating all the antipodal pairs, as described above, and, then, iterating over each of the pairs and looking for the smallest distance between the points. Since the distance between parallel lines over vertices is the same as the distance between the vertices, the minimum distance between vertices will be equal to the minimum distance between the supporting lines.
+	
+\end{document}
