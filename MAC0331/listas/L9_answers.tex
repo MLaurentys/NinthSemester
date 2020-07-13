@@ -1,0 +1,85 @@
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{float}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{tikz}
+
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\lstset{columns=fullflexible,
+	mathescape=true,
+	numbers=left,
+	stepnumber=1,
+	morekeywords={do, for, range, return, if, while, True, False},
+	xleftmargin=5.0ex
+}
+
+\title{\vspace{-4.0cm}MAC0331 - Lista 8}
+\author{Matheus T. de Laurentys, 9793714}
+
+\begin{document}
+	\maketitle
+	\noindent
+	\textbf{Q 4:} \\
+	\begin{lstlisting}
+// Using Wikipedia's API:
+class Edge {
+	Vertex *vert_origin, *vert_destination;
+	Face *face_left, *face_right;
+	Edge *edge_left_cw,
+	      *edge_left_ccw,
+	      *edge_right_cw,
+	      *edge_right_ccw;
+};
+class Vertex {
+	float x, y, z;
+	Edge *edge;
+};
+class Face {
+	Edge *edge;
+};
+	\end{lstlisting}
+	\textbf{a)}
+	\begin{lstlisting}
+std::vector<Vertex*> RETURN_VERTICES(Face *face) {
+	Edge *edge = face->edge;
+	Vertex *origin = edge->vert_origin;
+	std::vector<Vertex*> vertices = {origin};
+	do {
+		verices.push_back(edge->vert_destination);
+		if (*face == *(edge->face_left))
+			edge = edge->edge_left_cw;
+		else
+			edge = edge->edge_right_cw;
+	}
+	while (*(edge->vert_destination) != *origin);
+	return vertices;
+}
+	\end{lstlisting}
+	\clearpage
+	\textbf{b)}
+	\begin{lstlisting}
+std::vector<Vertex*> RETURN_ADJACENTS(Vertex *v) {
+	std::vector<Vertex*> adj;
+	Edge *edge = v->edge;
+	Edge *initial = v->edge;
+	do {
+		if (*(edge->vert_origin) == *v) {
+			adj.push_back(edge->vert_destination);
+			edge = edge_left_ccw;
+		}
+		else {
+			adj.push_back(edge->vert_origin);
+			edge = edge_left_cw;
+		}
+	} while (*initial != *edge);
+	return adj;
+}
+	\end{lstlisting}
+\end{document}
+
+
+
