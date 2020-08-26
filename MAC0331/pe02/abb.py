@@ -1,4 +1,4 @@
-from geocomp.common.prim import left, collinear, right
+from geocomp.common.prim import left, collinear, right, on_segment
 from .node_types import Node_Seg as Node
 
 class sweep_bst:
@@ -23,6 +23,13 @@ class sweep_bst:
 
     def sucessor (self, reference):
         return self._sucessor(self._root, reference, None, None)
+
+    # Returns any segment that goes thorugh reference
+    def search (self, reference):
+        ret = self._search(self._root, reference)
+        if ret is not None:
+            ret = ret.seg
+        return ret
 
     def _remove (self, node, seg, reference):
         if node is None:
@@ -97,3 +104,18 @@ class sweep_bst:
         if self._succ_comp(node.seg, reference):
             return self._sucessor(node.right, reference, node.seg, succ_seg)
         return self._sucessor(node.left, reference, last_seg, node.seg)
+
+    def _search(self, node, reference):
+        if node is None:
+            ret = None
+        elif left(node.seg.init, node.seg.to, reference):
+            ret = self._search(node.left, reference)
+        elif right(node.seg.init, node.seg.to, reference):
+            ret = self._search(node.right, reference)
+        elif on_segment(node.seg.init, node.seg.to, reference):
+            ret = node
+        else: #already is collinear
+            ret = self._search(node.right, reference)
+            if ret is None:
+                ret = self._search(node.left, reference)
+        return ret

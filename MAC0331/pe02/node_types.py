@@ -34,23 +34,10 @@ class Node_Event:
         elif (identifier == 1):
             self.right.add(seg)
         elif (identifier == -1):
-            self.intersections.add(seg[0])
-            self.intersections.add(seg[1])
-            #self.add_to_intersection(seg[0], seg[1])
+            for s in seg:
+                self.intersections.add(s)
         else:
             print ("add_to_segment usage error. Ignoring...")
-
-    def add_to_intersection(self, seg1, seg2):
-        if (at_left(seg1.init, seg1.to, seg2.init)):
-            self.intersections.add((seg1,seg2))
-        elif (at_left(seg2.init, seg2.to, seg1.init)):
-            self.intersections.add((seg2,seg1))
-        elif (at_left(seg1.init, seg1.to, seg2.to)):
-            self.intersections.add((seg2,seg1))
-        elif (at_left(seg2.init, seg2.to, seg1.to)):
-            self.intersections.add((seg1,seg2))
-        else:
-            print("major problem")
 
     def __lt__(self, other):
         return self.node < other.node

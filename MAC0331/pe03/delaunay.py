@@ -5,8 +5,8 @@ from geocomp.common.point import Point
 from geocomp.common.segment import Segment
 from geocomp.common.prim import left, collinear, on_segment
 from geocomp.common import control
-from geocomp.triangulation.triangle_node import Node
-from geocomp.triangulation.DCEL import hedge, DCEL
+from geocomp.pe03.triangle_node import Node
+from geocomp.pe03.DCEL import hedge, DCEL
 
 root = None
 DG = None
@@ -37,7 +37,8 @@ def pre_process (points):
                     Point(left_hor, mid_ver - len_ver), #bottom left
                     Point(mid_hor + hor_fact, mid_ver)) #center right
         for i in range(len(not_inside)):
-            if node.contains_proper(points[not_inside[i]]):
+            if node.contains_proper(points[not_inside[i]]) or\
+                    node.is_on_edge(points[not_inside[i]]):
                 inside.append(i)
         for ind in reversed(inside):
             not_inside.pop(ind)
@@ -403,8 +404,5 @@ def triangulation (points):
             drawn.add(he.face)
             he.face.draw()
     control.sleep()
-    for face in drawn:
-        face.remove_draw()
-    
     return DG, dcel
 

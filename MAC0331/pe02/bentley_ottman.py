@@ -30,7 +30,7 @@ def make_event (segment, point, position):
     #position 1: right
     #position -1: intersection -> segment = [seg1, seg2]
     pt = (point[0], point[1])
-    if (pt in event_pt_map):
+    if pt in event_pt_map:
         node_event = event_pt_map[pt]
         node_event.add_to_segment(segment, position)
     else:
@@ -53,7 +53,7 @@ def make_event_points (segs):
 ##
 
 # Called once for every event, will print the segments that intersect
-def check_starting_collision(event):
+def print_intersection(event):
     if len(event.left) + len(event.right) + len(event.intersections) > 1:
         print("Intersection at (%f, %f)\nSegments:"
               % (event.node.x, event.node.y))
@@ -77,23 +77,23 @@ def find_collision(event):
             make_event(segs, inter_pt, -1)
         segs[0].unhilight()
         segs[1].unhilight()
-
+    # Lida com caso..
 
 # Called once for each event, updates to bst to reflect the state of the
 #  sweep-line on top of the event
 def update_bst(event):
     global bst
     pt = event.node.get_point()
-    inters = list(event.intersections)
+    int_r = event.right.union(event.intersections)
     for seg in event.right:
         bst.remove(seg, pt)
+        int_r.remove(seg)
         seg.hilight("#ff8888")
+    inters = list(int_r)
     for seg in inters:
-        if seg not in event.right:
-            bst.remove(seg, pt)
-    for seg in reversed(inters):
-        if seg not in event.right:
-            bst.insert(seg, pt)
+        bst.remove(seg, pt)
+    for seg in inters:
+        bst.insert(seg, pt)
     for seg in event.left:
         seg.hilight("#8888ff")
         bst.insert(seg, pt)
@@ -120,27 +120,12 @@ def sweepline (segments):
         pt = event_heap.get()
         circ = control.plot_circle(pt.node.x, pt.node.y, "green", 2)
         control.sleep()
-        check_starting_collision(pt)
+        if len(pt.intersections) + len(pt.right) == 0:
+            seg = bst.search(pt.node.get_point())
+            if seg is not None:  # um único segmento na árvore contem pt
+                                 #  e pt é extremo esquerdo de alguns segmentos
+                pt.add_to_segment([seg], -1)
         update_bst(pt)
         find_collision(pt)
+        print_intersection(pt)
         control.plot_delete(circ)
-
-def testa_bst(bst, segments):
-    for seg in segments[0:4]:
-        bst.insert(seg, seg.init)
-    a = 0
-    for seg in segments[0:4]:
-        bst.remove(seg, seg.to)
-    b = 0
-    for seg in segments[4:8]:
-        bst.insert(seg, seg.init)
-    a = 0
-    for seg in segments[4:8]:
-        bst.remove(seg, seg.to)
-    b = 0
-    for seg in segments[8:13]:
-        bst.insert(seg, seg.init)
-    a = 0
-    for seg in segments[8:13]:
-        bst.remove(seg, seg.to)
-    b = 0
