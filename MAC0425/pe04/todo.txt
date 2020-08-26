@@ -1,0 +1,9 @@
+Ordenar dados para remover duplicacoes.
+Renomear colunas.
+Merge dados paciente e dados de exame.
+Avalair se eh possivel fazer nas tabelas dos hospitais.
+Remover as lishas que mostram material.
+Verificar quais exames seram as saidas de cada rede - manter esses exames
+Contar quantas vezes os exame foi feito e remover os que foram feitos poucas vezes.
+
+

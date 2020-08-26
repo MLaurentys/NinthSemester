@@ -1,0 +1,23 @@
+Matheus T. de Laurentys
+
+10
+
+Em se tratando dos nomes e significados propriamente, eu ja tinha algum conhecimento de todos estes topicos. No entanto, nao havia ainda notado o significado de se fazer P(x,y) e/ou P(x|y), como vimos em metodos generativos. Outra parte que eu nao tinha conhecimento (que, confesso, so entendi mesmo depois de um tempo, era aprendizado nao-supervisionado), que foi o mais interessante.
+
+Em se tratando de conceitos básicos e suas definições acho que tudo ficou muito claro. Gostaria de entender melhor aprendizado não-supervisionado logo de inicio, (principalmente ter uma ideia inicial de como treinar baseado em conjuntos de dados para os quais não tenho uma classificação já pronta - "como ele avalia o próprio aprendizado?" era minha principal duvida, apesar disso nem ser feito).
+
+8
+
+A parte de erro de generalização (dicotomia e VC Theory) foi muito legal MESMO, mas apenas depois que chegamos ao final do processo e eu entendi de fato, o que aquela álgebra toda estava fazendo. Com exceção de coisas muito básicas mesmo, deste tópico eu não tinha conhecimento algum.
+
+Acredito que apenas depois de termos visto os conceitos na pratica que eu fui entender com clareza. Dei a nota 8, pois acredito que apenas nas ultimas aulas (também por que foi quando fiz a lista 1) eu fui ter maior clareza, não quando o conceito foi apresentado, mas acredito que agora esta tudo bem.
+
+9
+
+Eu sabia muito pouco mesmo das "entranhas" dos algoritmos. Eu já tinha ouvido todos esses nomes, mas sabia pouco de como faziam o que faziam. Essa parte foi bem legal de aprender.
+
+Eu acompanho um canal do youtube chamado Two Minute Papers" e ele fala muito de aprendizado de maquina, sempre mostrando o produto final de alguma pesquisa feita. Sempre me pareceu coisa de outra mundo e agora parece menos, porem seria muito legal mesmo se tivéssemos a experiencia de ver os métodos e variações de alguns casos específicos que geram alguns produtos que são surpreendentes. O que quero dizer eh: seria interessante ver os algoritmos mais clássicos, mas também um ou dois casos de aplicações praticas com todas as variações e técnicas especificas utilizadas nela.
+
+10
+
+Puxa, essa parte foi muito bacana mesmo. Eu entendi muito pouco mesmo
